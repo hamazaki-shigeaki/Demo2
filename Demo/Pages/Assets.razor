@@ -1,0 +1,263 @@
+﻿@page "/Assets"
+@using DevExpress.Blazor
+@using DBAccess.Model
+@inherits Base
+
+<div class="navbar">
+    <a href="/Top">トップページ</a>
+    <a>/ 案件一覧</a>
+    <a>/ <b>債権管理</b></a>
+</div>
+
+<br>
+<DxFormLayout>
+    <DxFormLayoutItem ColSpanLg="3" ColSpanMd="3" BeginRow=true Caption="案件番号">
+        <Template>
+            <DxTextBox @bind-Text="SuitNo" ReadOnly=true style="width:450px" />
+        </Template>
+    </DxFormLayoutItem>
+</DxFormLayout>
+<br>
+
+<DxGrid Data="@MAssetsList"
+        @ref="Grid"
+        CssClass="myGrid"
+        AllowSort="true"
+        KeyFieldName="Id"
+        SelectionMode="GridSelectionMode.Single"
+        ColumnResizeMode="GridColumnResizeMode.ColumnsContainer"
+        VirtualScrollingEnabled="true"
+        EditMode="GridEditMode.PopupEditForm"
+        FocusedRowEnabled="true"
+        @bind-SelectedDataItem="@SelectedDataItem"
+        ShowFilterRow="@OnFilterRow"
+        ShowGroupPanel="@OnGroupRow"
+        FocusedRowChanged="OnFocusedRowChanged"
+        CustomizeEditModel="Grid_CustomizeEditModel"
+        EditModelSaving="Grid_EditModelSaving"
+        DataItemDeleting="Grid_DataItemDeleting"
+        TextWrapEnabled="false">
+    <Columns>
+        <DxGridCommandColumn Width="120px" >
+        </DxGridCommandColumn>
+        <DxGridDataColumn FieldName="AssetsId" Caption="債権ID" Width="75px" />
+        <DxGridDataColumn FieldName="StrAssetType" Caption="債権種別" Width="180px" />
+        <DxGridDataColumn FieldName="Kingaku" Caption="債権金額" Width="130px" />
+        <DxGridDataColumn FieldName="DueDate" Caption="支払期日" Width="130px" />
+        <DxGridDataColumn FieldName="PaymentMethod" Caption="支払方法" Width="180px" />
+        <DxGridDataColumn FieldName="TransactionDetails" Caption="取引内容" Width="180px" />
+        <DxGridDataColumn FieldName="Payer" Caption="支払者" Width="180px" />
+        <DxGridDataColumn FieldName="PaymentDestination" Caption="支払先" Width="180px" />
+        <DxGridDataColumn FieldName="Apply" Caption="備考" Width="180px" />
+    </Columns>
+    <EditFormTemplate Context="EditFormContext">
+        <DxFormLayout>
+            <DxFormLayoutItem Caption="債権種別" ColSpanMd="6" BeginRow=true>
+                <DxComboBox Data="@CombDocClassificationList"
+                            TextFieldName="@nameof(CommonCombBox.Text)"
+                            @bind-Value="EntryData.AssetType" />
+                <ValidationMessage For="@(() => EntryData.AssetType)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="債権金額" ColSpanMd="4">
+                <DxSpinEdit @bind-Value="EntryData.Kingaku" DisplayFormat="#,##0" ShowSpinButtons="false"
+                MinValue="0"/>
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="支払期日" ColSpanMd="3" BeginRow="true">
+                <DxDateEdit @bind-Date="EntryData.DueDate" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="支払方法" ColSpanMd="6">
+                <DxTextBox @bind-Text="EntryData.PaymentMethod" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.PaymentMethod)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="取引内容" ColSpanMd="6">
+                <DxTextBox @bind-Text="EntryData.TransactionDetails" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.TransactionDetails)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="支払者" ColSpanMd="6">
+                <DxTextBox @bind-Text="EntryData.Payer" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.Payer)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="支払先" ColSpanMd="6">
+                <DxTextBox @bind-Text="EntryData.PaymentDestination" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.PaymentDestination)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="備考" ColSpanMd="6">
+                <DxTextBox @bind-Text="EntryData.Apply" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.Apply)" />
+            </DxFormLayoutItem>
+        </DxFormLayout>
+    </EditFormTemplate>
+</DxGrid>
+
+<DxFormLayout CssClass="b-100">
+    <DxFormLayoutItem>
+        <DxButton Text="印刷" style="margin-top:5px" />
+        <DxButton Text="戻る" Click="OnButtonReturn" style="margin-top:5px" />
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+
+<style>
+
+    .button_end {
+        position: absolute;
+        right: 0;
+    }
+
+    .myGrid {
+        height: 465px;
+    }
+
+    .b-100 {
+        padding: 10px;
+    }
+
+    .dxbl-modal {
+        --dxbl-popup-max-width: 1200px;
+    }
+
+    .w-1200 {
+        width: 1200px;
+    }
+
+
+    .filter-switch-row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .filter-checkboxes {
+        display: flex;
+        justify-content: flex-start;
+        width: 80%;
+    }
+
+    .filter-checkbox {
+        width: 150px;
+    }
+
+    .accordion {
+        width: 100%;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #d0d0d0;
+    }
+
+        .accordion summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            color: #333;
+        }
+
+            .accordion summary::after {
+                content: '';
+                width: 10px;
+                height: 10px;
+                border-right: 2px solid #333;
+                border-bottom: 2px solid #333;
+                transform: rotate(45deg);
+                transition: transform 0.3s;
+            }
+
+        .accordion[open] summary::after {
+            transform: rotate(225deg);
+        }
+
+        .accordion p {
+            padding: 1em;
+            margin: 0;
+            display: none;
+        }
+
+        .accordion[open] p {
+            display: block;
+        }
+
+    .select_title {
+        font-weight: bolder;
+    }
+
+    .navbar {
+        justify-content: left;
+        background-color: #f0f0f0; /* 背景色を淡い灰色にする */
+        padding: 10px; /* 上下左右に余白をつける */
+    }
+
+        .navbar a {
+            color: #000; /* テキスト色 */
+            padding: 0 5px; /* 各リンク間にスペースをつける */
+        }
+
+    .caption {
+        font-weight: 800;
+    }
+
+    .dx-demo-radio-group-label {
+        font-size: inherit;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+        .dx-demo-radio-group-label.dx-demo-small {
+            font-size: 0.75rem;
+        }
+
+        .dx-demo-radio-group-label.dx-demo-large {
+            font-size: 1rem;
+        }
+
+    .dx-demo-radio-group {
+        padding-bottom: 1rem;
+    }
+
+    .dx-demo-radio-selected-value {
+        max-width: 480px;
+        width: 100%;
+    }
+
+    .panel {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: #f9f9f9;
+    }
+
+
+    .wrapper {
+        margin: 20px;
+    }
+
+    .upload-container,
+    .upload-container > div:first-child {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .drop-file-icon {
+        background-size: contain;
+        mask-repeat: no-repeat;
+        -webkit-mask-repeat: no-repeat;
+        background-position: center center;
+        background-color: #ADB5BD;
+        width: 48px;
+        height: 48px;
+        -webkit-mask-image: url("../images/icons/drop-file.svg");
+        mask-image: url("../images/icons/drop-file.svg");
+    }
+
+    .drop-file-label {
+        font-weight: 510;
+        font-size: 1rem;
+    }
+
+    .cancelBt {
+        margin-left: 30px;
+    }
+</style>

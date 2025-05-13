@@ -1,0 +1,25 @@
+2024-09-20 14:27:21,254  INFO - MESSAGE:処理開始
+ 2024-09-20 14:27:28,955  INFO - MESSAGE:処理開始
+ 2024-09-20 14:34:27,189  INFO - MESSAGE:処理開始
+ 2024-09-20 14:34:36,346  INFO - MESSAGE:処理開始
+ 2024-09-20 14:35:16,397  INFO - MESSAGE:処理開始
+ 2024-09-20 14:35:22,497  INFO - MESSAGE:処理開始
+ 2024-09-20 14:52:49,766  INFO - MESSAGE:処理開始
+ 2024-09-20 14:53:05,909  INFO - MESSAGE:処理開始
+ 2024-09-20 14:53:16,387 ERROR - MESSAGE:Microsoft.JSInterop.JSException: Could not find 'Mes_info' ('Mes_info' was undefined).
+Error: Could not find 'Mes_info' ('Mes_info' was undefined).
+    at https://localhost:7060/_framework/blazor.server.js:1:497
+    at Array.forEach (<anonymous>)
+    at s.findFunction (https://localhost:7060/_framework/blazor.server.js:1:465)
+    at E (https://localhost:7060/_framework/blazor.server.js:1:2611)
+    at https://localhost:7060/_framework/blazor.server.js:1:3499
+    at new Promise (<anonymous>)
+    at Ft.beginInvokeJSFromDotNet (https://localhost:7060/_framework/blazor.server.js:1:3480)
+    at Ft._invokeClientMethod (https://localhost:7060/_framework/blazor.server.js:1:75072)
+    at Ft._processIncomingData (https://localhost:7060/_framework/blazor.server.js:1:72696)
+    at Ft.connection.onreceive (https://localhost:7060/_framework/blazor.server.js:1:67009)
+   at Microsoft.JSInterop.JSRuntime.InvokeAsync[TValue](Int64 targetInstanceId, String identifier, Object[] args)
+   at Microsoft.JSInterop.JSRuntimeExtensions.InvokeVoidAsync(IJSRuntime jsRuntime, String identifier, Object[] args)
+   at Kokuyo.Common.CommonTool.InfomationMessage(IJSRuntime jsRuntime, String message) in C:\pro\clone\git\Kokuyo\Kokuyo\Common\CommonTool.cs:line 87
+ 2024-09-20 15:04:20,839  INFO - MESSAGE:処理開始
+ 

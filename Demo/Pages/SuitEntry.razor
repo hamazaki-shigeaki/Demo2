@@ -1,0 +1,410 @@
+﻿@page "/SuitEntry"
+
+@using DevExpress.Blazor
+@using DBAccess.Model;
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+
+@inject NavigationManager NavigationManager
+
+@inherits Base
+
+<div class="navbar">
+    <a href="/Top">トップページ</a>
+    <a>/ <b>新規案件登録</b></a>
+</div>
+
+<br>
+
+<Microsoft.AspNetCore.Components.Forms.EditForm Model="@EntryData" Context="EditFormContext">
+    <DxFormLayout>
+        <DxFormLayoutItem Caption="案件番号" ColSpanMd="3" BeginRow="true">
+            <DxTextBox @bind-Text="EntryData.SuitNo" ReadOnly=true />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="" ColSpanMd="1">
+        </DxFormLayoutItem>
+
+        <DxFormLayoutItem Caption="状況" ColSpanMd="3" BeginRow="true">
+            <DxComboBox Data="@CombSituationList"
+                        TextFieldName="@nameof(CommonCombBox.Text)"
+                        ReadOnly="true"
+                        @bind-Value="EntryData.Situation" />
+        </DxFormLayoutItem>
+
+        <DxFormLayoutItem Caption="顧客コード　(空白は新規)：" ColSpanMd="4" BeginRow="true">
+            <DxComboBox Data="@CombCustomerList"
+                        SearchMode="ListSearchMode.AutoSearch"
+                        SearchFilterCondition="ListSearchFilterCondition.Contains"
+                        SearchTextParseMode="ListSearchTextParseMode.GroupWordsByAnd"
+                        TextFieldName="@nameof(CommonCombBox.Text)"
+                        @bind-Value="EntryData.CustomerCd"
+                        SelectedDataItemChanged="(SelectedDataItemChangedEventArgs<CommonCombBox> args) => OnSelectedCityChanged(args)"
+                        />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="" ColSpanMd="4">
+            <DxButton Text="取込" style="margin-top:5px" Click="OnButtonTorikomi" />
+        </DxFormLayoutItem>
+
+        <DxFormLayoutItem Caption="会社名" ColSpanMd="4" BeginRow="true">
+            <DxTextBox @bind-Text="EntryData._MCustomer.CompanyName" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="会社名カナ" ColSpanMd="4" BeginRow="true">
+            <DxTextBox @bind-Text="EntryData._MCustomer.CompanyKana" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="代表者（姓）" ColSpanMd="4" BeginRow="true">
+            <DxTextBox @bind-Text="EntryData._MCustomer.PresidentNameSei" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="代表者（名）" ColSpanMd="4">
+            <DxTextBox @bind-Text="EntryData._MCustomer.PresidentNameMei" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="代表者（姓カナ）" ColSpanMd="4" BeginRow="true">
+            <DxTextBox @bind-Text="EntryData._MCustomer.PresidentKanaSei" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="代表者（名カナ）" ColSpanMd="4">
+            <DxTextBox @bind-Text="EntryData._MCustomer.PresidentKanaMei" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="〒" ColSpanMd="2" BeginRow="true">
+            <DxTextBox @bind-Text="EntryData._MCustomer.ZipCd" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="住所（都、道、府、県）" ColSpanMd="4" >
+            <DxTextBox @bind-Text="EntryData._MCustomer.AddressKen" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="住所（市、区、郡）" ColSpanMd="4">
+            <DxTextBox @bind-Text="EntryData._MCustomer.AddressSi" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="住所（番地）" ColSpanMd="4" BeginRow="true">
+            <DxTextBox @bind-Text="EntryData._MCustomer.AddressBanti" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="最寄り駅" ColSpanMd="4">
+            <DxTextBox @bind-Text="EntryData._MCustomer.NearestStation" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="会 社(TEL)" ColSpanMd="4" BeginRow="true">
+            <DxTextBox @bind-Text="EntryData._MCustomer.Tel" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="会 社(FAX)" ColSpanMd="4">
+            <DxTextBox @bind-Text="EntryData._MCustomer.Fax" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="携帯" ColSpanMd="4" BeginRow="true">
+            <DxTextBox @bind-Text="EntryData._MCustomer.CellPhone" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="業種" ColSpanMd="4">
+            <DxTextBox @bind-Text="EntryData._MCustomer.Industry" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="生年月日" ColSpanMd="3" BeginRow="true">
+            <DxDateEdit @bind-Date="EntryData._MCustomer.DateOfBirth" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="" ColSpanMd="1">
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="月商(万円)" ColSpanMd="2">
+            <Template>
+                <DxSpinEdit ShowSpinButtons="false" @bind-Value="EntryData._MCustomer.MonthlySales" DisplayFormat="{0:#,##0}" CssClass="my-spin" />
+            </Template>
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="万円" ColSpanMd="1">
+            <Template>
+            </Template>
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="買取ご相談金額" ColSpanMd="2" BeginRow="true">
+            <DxSpinEdit ShowSpinButtons="false" @bind-Value="EntryData._MCustomer.AcquisitionConsultationAmount" DisplayFormat="{0:#,##0}" CssClass="my-spin" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="万円" ColSpanMd="1">
+            <Template>
+            </Template>
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="" ColSpanMd="1">
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="ご使用用途" ColSpanMd="4">
+            <DxTextBox @bind-Text="EntryData._MCustomer.PurposeOfUse" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="会社設立年月日" ColSpanMd="3" BeginRow="true">
+            <DxDateEdit @bind-Date="EntryData._MCustomer.DateOfCompanyEstablishment" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="" ColSpanMd="1">
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="当座預金有無" ColSpanMd="3">
+            <DxComboBox Data="@CombUmeist"
+                        TextFieldName="@nameof(CommonCombBox.Text)"
+                        @bind-Value="EntryData._MCustomer.CurrentAccountUmu" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="過去の不渡り有無" ColSpanMd="3" BeginRow="true">
+            <DxComboBox Data="@CombUmeist"
+                        TextFieldName="@nameof(CommonCombBox.Text)"
+                        @bind-Value="EntryData._MCustomer.PastDishonoredUmu" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="" ColSpanMd="1">
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="不渡り年月日" ColSpanMd="3">
+            <DxDateEdit @bind-Date="EntryData._MCustomer.DateOfDishonored" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="消費税" ColSpanMd="3" BeginRow="true">
+            <DxComboBox Data="@CombZeiKbnList"
+                        TextFieldName="@nameof(CommonCombBox.Text)"
+                        @bind-Value="EntryData._MCustomer.ConsumptionTaxKbn" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="源泉税" ColSpanMd="3" BeginRow="true">
+            <DxComboBox Data="@CombZeiKbnList"
+                        TextFieldName="@nameof(CommonCombBox.Text)"
+                        @bind-Value="EntryData._MCustomer.WithholdingTaxKbn" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="社会保険" ColSpanMd="3" BeginRow="true">
+            <DxComboBox Data="@CombZeiKbnList"
+                        TextFieldName="@nameof(CommonCombBox.Text)"
+                        @bind-Value="EntryData._MCustomer.SocialInsuranceKbn" />
+        </DxFormLayoutItem>
+    </DxFormLayout>
+    <DxFormLayout CssClass="b-100">
+        <DxFormLayoutItem ColSpanLg="11" ColSpanMd="11">
+            <DxButton Text="登録" Click="OnButtonEntry" style="margin-top:5px" />
+        </DxFormLayoutItem>
+    </DxFormLayout>
+</Microsoft.AspNetCore.Components.Forms.EditForm>
+
+@if (!string.IsNullOrEmpty(imagePath))
+{
+    <img src="@imagePath" alt="アップロード画像" style="max-width: 500px;" />
+}
+
+@if (pdfViewerOn)
+{
+    <SfPdfViewerServer @ref="pdfViewer"
+                       DocumentPath="@PdfPath"
+                       CssClass="w-100 pdf-viewer"
+                       Width="1060px"
+                       Height="1000px">
+    </SfPdfViewerServer>
+    @*
+    <DxPdfViewer CssClass="w-100 pdf-viewer"
+                 CustomizeToolbar="OnCustomizeToolbar"
+                 DocumentContent="DocumentContent" />
+    *@
+}
+
+<DxPopup Width="800px"
+         CssClass="PopupCss"
+         @bind-Visible="@PopupVisible"
+         HeaderText="書類取込">
+    <BodyContentTemplate>
+        <div id="overviewDemoDropZone" class="card custom-drop-zone rounded-3 w-100 m-0">
+            <span class="drop-file-icon mb-3"></span>
+            <span class="drop-file-label">Drag and Drop File Here</span><span class="m-1">or</span>
+            <DxButton Id="overviewDemoSelectButton"
+                      CssClass="m-1"                   
+                      RenderStyle="ButtonRenderStyle.Primary"
+                      dir="C:\\OBS\\01.src\\Demo\\Demo\\wwwroot\\download"
+                      Text="Select File" />
+        </div>
+        <DxUpload Name="myFile"
+                  Visible="@UploadVisible"
+                  AllowMultiFileUpload="true"
+                  ExternalSelectButtonCssSelector="#overviewDemoSelectButton"
+                  ExternalDropZoneCssSelector="#overviewDemoDropZone"
+                  ExternalDropZoneDragOverCssClass="custom-drop-zone-hover"
+                  MaxFileSize="15000000"
+                  UploadUrl="@GetUploadUrl("api/Upload/Upload/")"
+                  SelectedFilesChanged="@SelectedFilesChanged">
+        </DxUpload>
+        <DxButton Text="取込" Click="OnButtonCopy" style="margin-top:5px" />
+        <DxButton Text="閉じる" Click="OnButtonClose" style="margin-top:5px" />
+
+    </BodyContentTemplate>
+</DxPopup>
+
+<style>
+    span.okane {
+        position: absolute;
+        padding-left: 200px;
+        margin-bottom:90px;
+        width: 300px;
+    }
+
+    .my-spin input {
+        text-align: right;
+    }
+
+    .button_end {
+        position: absolute;
+        right: 0;
+    }
+
+    .myGrid {
+        height: 465px;
+    }
+
+    .b-100 {
+        padding: 10px;
+    }
+
+    .dxbl-modal {
+        --dxbl-popup-max-width: 1200px;
+    }
+
+    .w-1200 {
+        width: 1200px;
+    }
+
+
+    .filter-switch-row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .filter-checkboxes {
+        display: flex;
+        justify-content: flex-start;
+        width: 80%;
+    }
+
+    .filter-checkbox {
+        width: 150px;
+    }
+
+    .accordion {
+        width: 100%;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #d0d0d0;
+    }
+
+        .accordion summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            color: #333;
+        }
+
+            .accordion summary::after {
+                content: '';
+                width: 10px;
+                height: 10px;
+                border-right: 2px solid #333;
+                border-bottom: 2px solid #333;
+                transform: rotate(45deg);
+                transition: transform 0.3s;
+            }
+
+        .accordion[open] summary::after {
+            transform: rotate(225deg);
+        }
+
+        .accordion p {
+            padding: 1em;
+            margin: 0;
+            display: none;
+        }
+
+        .accordion[open] p {
+            display: block;
+        }
+
+    .select_title {
+        font-weight: bolder;
+    }
+
+    .navbar {
+        justify-content: left;
+        background-color: #f0f0f0; /* 背景色を淡い灰色にする */
+        padding: 10px; /* 上下左右に余白をつける */
+    }
+
+        .navbar a {
+            color: #000; /* テキスト色 */
+            padding: 0 5px; /* 各リンク間にスペースをつける */
+        }
+
+    .caption {
+        font-weight: 800;
+    }
+
+    .dx-demo-radio-group-label {
+        font-size: inherit;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+        .dx-demo-radio-group-label.dx-demo-small {
+            font-size: 0.75rem;
+        }
+
+        .dx-demo-radio-group-label.dx-demo-large {
+            font-size: 1rem;
+        }
+
+    .dx-demo-radio-group {
+        padding-bottom: 1rem;
+    }
+
+    .dx-demo-radio-selected-value {
+        max-width: 480px;
+        width: 100%;
+    }
+
+    .panel {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: #f9f9f9;
+    }
+
+
+    .wrapper {
+        margin: 20px;
+    }
+
+    .upload-container,
+    .upload-container > div:first-child {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .drop-file-icon {
+        background-size: contain;
+        mask-repeat: no-repeat;
+        -webkit-mask-repeat: no-repeat;
+        background-position: center center;
+        background-color: #ADB5BD;
+        width: 48px;
+        height: 48px;
+        -webkit-mask-image: url("../images/icons/drop-file.svg");
+        mask-image: url("../images/icons/drop-file.svg");
+    }
+
+    .drop-file-label {
+        font-weight: 510;
+        font-size: 1rem;
+    }
+
+    .cancelBt{
+        margin-left: 30px;
+    }
+
+    custom-drop-zone {
+        padding: 0 !important;
+        border-style: dashed;
+        border-width: 2px !important;
+        height: 230px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(183, 183, 183, 0.1);
+    }
+
+    .custom-drop-zone.custom-drop-zone-hover {
+        border-style: solid;
+    }
+
+    .custom-drop-zone svg {
+        width: 42px;
+        height: 42px;
+    }
+
+    .custom-drop-zone > *:not(#overviewDemoSelectButton) {
+        pointer-events: none;
+    }
+ </style>

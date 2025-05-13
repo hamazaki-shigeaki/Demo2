@@ -1,0 +1,42 @@
+﻿@using DevExpress.Blazor
+
+<div class="sidebar @StateCssClass">
+    <DxTreeView AllowSelectNodes="true" CssClass="app-sidebar">
+            <Nodes>
+            <DxTreeViewNode NavigateUrl="Top" Text="トップページ" CssClass="@rootNodeCssClass"></DxTreeViewNode>
+            <DxTreeViewNode NavigateUrl="" Text="業務" CssClass="@rootNodeCssClass" Expanded="true">
+                <Nodes>
+                    <DxTreeViewNode Text="新規案件登録" NavigateUrl="SuitEntry" />
+                    <DxTreeViewNode Text="案件一覧" NavigateUrl="SuitList" />
+                </Nodes>
+            </DxTreeViewNode>
+
+            <DxTreeViewNode NavigateUrl="" Text="バッチ処理" CssClass="@rootNodeCssClass" Expanded="true">
+                <Nodes>
+                    <DxTreeViewNode NavigateUrl="" Text="取込処理" CssClass="@rootNodeCssClass" Expanded="true">
+                        <Nodes>
+                            <DxTreeViewNode Text="OCR取込結果・確認" NavigateUrl="OcrImportResult" />
+                        </Nodes>
+                    </DxTreeViewNode>
+                </Nodes>
+            </DxTreeViewNode>
+
+            <DxTreeViewNode NavigateUrl="" Text="メンテナンス" CssClass="@rootNodeCssClass" Expanded="true">
+                <Nodes>
+                    <DxTreeViewNode NavigateUrl="" Text="マスタ" CssClass="@rootNodeCssClass" Expanded="true">
+                        <Nodes>
+                            <DxTreeViewNode Text="顧客マスタ" NavigateUrl="MenteMCustomer" />
+                            <DxTreeViewNode Text="スタッフマスタ" NavigateUrl="MenteMStaff" />
+                            <DxTreeViewNode Text="区分マスタ" NavigateUrl="MenteMKubun" />
+                        </Nodes>
+                    </DxTreeViewNode>
+                </Nodes>
+            </DxTreeViewNode>
+        </Nodes>
+    </DxTreeView>
+</div>
+
+@code {
+    const string rootNodeCssClass = "root-item";
+    [Parameter] public string? StateCssClass { get; set; }
+}

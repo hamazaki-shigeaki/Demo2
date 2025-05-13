@@ -1,0 +1,275 @@
+﻿@page "/MenteMCustomer"
+@using DevExpress.Blazor
+@using DBAccess.Model
+@inherits Base
+
+<div class="navbar">
+    <a href="/Top">トップページ</a>
+    <a>/ メンテ</a>
+    <a>/ 顧客マスタ</a>
+</div>
+
+<br>
+<a>顧客マスタ一覧</a>
+<br>
+
+<br>
+<DxFormLayout CaptionPosition="CaptionPosition.Vertical" CssClass="w-100">
+    <DxFormLayoutItem ColSpanMd="1" >
+        <DxButton Text="クリア" Click="OnClear" />
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanMd="2">
+        <DxCheckBox @bind-Checked="@OnFilterRow">ﾌｨﾙﾀｰ行</DxCheckBox>
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanMd="2">
+        <DxCheckBox @bind-Checked="@OnGroupRow">ｸﾞﾙｰﾌﾟ行</DxCheckBox>
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+<DxGrid Data="@MCustomerList"
+        @ref="Grid"
+        CssClass="myGrid"
+        AllowSort="true"
+        KeyFieldName="Id"
+        SelectionMode="GridSelectionMode.Single"
+        @bind-SelectedDataItem="@SelectedDataItem"
+        ColumnResizeMode="GridColumnResizeMode.ColumnsContainer"
+        VirtualScrollingEnabled="true"
+        EditMode="GridEditMode.PopupEditForm"
+        CustomizeEditModel="Grid_CustomizeEditModel"
+        EditModelSaving="Grid_EditModelSaving"
+        DataItemDeleting="Grid_DataItemDeleting"
+        ShowFilterRow="@OnFilterRow"
+        ShowGroupPanel="@OnGroupRow"
+        FocusedRowEnabled="true"
+        TextWrapEnabled="false">
+    <Columns>
+        <DxGridCommandColumn Width="120px" Caption="アクション" NewButtonVisible="false">
+        </DxGridCommandColumn>
+        <DxGridDataColumn FieldName="CustomerCd" Caption="顧客コード" Width="100px" />
+        <DxGridDataColumn FieldName="CompanyName" Caption="会社名" Width="100px" />
+        <DxGridDataColumn FieldName="CompanyKana" Caption="会社名カナ" Width="100px" />
+        <DxGridDataColumn FieldName="PresidentNameSei" Caption="代表者・姓" Width="100px" />
+        <DxGridDataColumn FieldName="PresidentNameMei" Caption="代表者・名" Width="100px" />
+        <DxGridDataColumn FieldName="PresidentKanaSei" Caption="代表者・姓カナ" Width="100px" />
+        <DxGridDataColumn FieldName="PresidentKanaMei" Caption="代表者・名カナ" Width="100px" />
+        <DxGridDataColumn FieldName="ZipCd" Caption="〒" Width="100px" />
+        <DxGridDataColumn FieldName="AddressKen" Caption="住所・都道府県" Width="100px" />
+        <DxGridDataColumn FieldName="AddressSi" Caption="市区郡" Width="100px" />
+        <DxGridDataColumn FieldName="AddressBanti" Caption="番地" Width="100px" />
+        <DxGridDataColumn FieldName="NearestStation" Caption="最寄り駅" Width="100px" />
+        <DxGridDataColumn FieldName="Tel" Caption="Tel" Width="100px" />
+        <DxGridDataColumn FieldName="CellPhone" Caption="携帯" Width="100px" />
+        <DxGridDataColumn FieldName="Fax" Caption="Fax" Width="100px" />
+        <DxGridDataColumn FieldName="Email" Caption="メール" Width="100px" />
+        <DxGridDataColumn FieldName="Url" Caption="ホームページ" Width="100px" />
+        <DxGridDataColumn FieldName="Industry" Caption="業種" Width="100px" />
+        <DxGridDataColumn FieldName="DateOfBirth" Caption="誕生日" Width="100px" />
+        <DxGridDataColumn FieldName="MonthlySales" Caption="月商(万円)" Width="100px" />
+    </Columns>
+    <EditFormTemplate Context="EditFormContext">
+        <DxFormLayout>
+            <DxFormLayoutItem Caption="顧客コード" ColSpanMd="6" BeginRow="true">
+                <DxTextBox @bind-Text="EntryData.CustomerCd" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="会社名" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.CompanyName" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.CompanyName)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="会社名カナ" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.CompanyKana" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.CompanyKana)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="代表者・姓" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.PresidentNameSei" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.PresidentNameSei)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="代表者・名" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.PresidentNameMei" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.PresidentNameMei)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="代表者・姓カナ" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.PresidentKanaSei" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.PresidentKanaSei)" />
+            </DxFormLayoutItem>            <DxFormLayoutItem Caption="代表者・名カナ" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.PresidentKanaMei" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.PresidentKanaMei)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="〒" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.ZipCd" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.ZipCd)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="住所・都道府県" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.AddressKen" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.AddressKen)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="市区郡" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.AddressSi" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.AddressSi)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="番地" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.AddressBanti" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.AddressBanti)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="最寄り駅" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.NearestStation" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.NearestStation)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Tel" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.Tel" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.Tel)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Fax" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.Fax" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.Fax)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="メール" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.Email" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.Email)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="ホームページ" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.Url" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.Url)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="業種" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.Industry" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.Industry)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="誕生日" ColSpanMd="6" BeginRow=true>
+                <DxDateEdit @bind-Date="EntryData.DateOfBirth"  />
+                <ValidationMessage For="@(() => EntryData.DateOfBirth)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="月商" ColSpanMd="6" BeginRow=true>
+                <DxSpinEdit ShowSpinButtons="false" @bind-Value="EntryData.MonthlySales" DisplayFormat="{0:#,##0}" CssClass="my-spin" />
+                <ValidationMessage For="@(() => EntryData.MonthlySales)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="万円" ColSpanMd="1" >
+            </DxFormLayoutItem>
+        </DxFormLayout>
+    </EditFormTemplate>
+</DxGrid>
+
+<style>
+    .button_end {
+        position: absolute;
+        right: 0;
+    }
+
+    .myGrid {
+        height: 465px;
+        width: 100%;
+    }
+
+    .b-100 {
+        padding: 10px;
+    }
+
+    .dxbl-modal {
+        --dxbl-popup-max-width: 1200px;
+    }
+
+    .w-1200 {
+        width: 1200px;
+    }
+
+
+    .filter-switch-row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .filter-checkboxes {
+        display: flex;
+        justify-content: flex-start;
+        width: 80%;
+    }
+
+    .filter-checkbox {
+        width: 150px;
+    }
+
+    .select_title {
+        font-weight: bolder;
+    }
+
+    .navbar {
+        justify-content: left;
+        background-color: #f0f0f0; /* 背景色を淡い灰色にする */
+        padding: 10px; /* 上下左右に余白をつける */
+    }
+
+        .navbar a {
+            color: #000; /* テキスト色 */
+            padding: 0 5px; /* 各リンク間にスペースをつける */
+        }
+
+    .caption {
+        font-weight: 800;
+    }
+
+    .dx-demo-radio-group-label {
+        font-size: inherit;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+        .dx-demo-radio-group-label.dx-demo-small {
+            font-size: 0.75rem;
+        }
+
+        .dx-demo-radio-group-label.dx-demo-large {
+            font-size: 1rem;
+        }
+
+    .dx-demo-radio-group {
+        padding-bottom: 1rem;
+    }
+
+    .dx-demo-radio-selected-value {
+        max-width: 480px;
+        width: 100%;
+    }
+
+    .panel {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: #f9f9f9;
+    }
+
+
+    .wrapper {
+        margin: 20px;
+    }
+
+    .upload-container,
+    .upload-container > div:first-child {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .drop-file-icon {
+        background-size: contain;
+        mask-repeat: no-repeat;
+        -webkit-mask-repeat: no-repeat;
+        background-position: center center;
+        background-color: #ADB5BD;
+        width: 48px;
+        height: 48px;
+        -webkit-mask-image: url("../images/icons/drop-file.svg");
+        mask-image: url("../images/icons/drop-file.svg");
+    }
+
+    .drop-file-label {
+        font-weight: 510;
+        font-size: 1rem;
+    }
+
+    .cancelBt {
+        margin-left: 30px;
+    }
+</style>

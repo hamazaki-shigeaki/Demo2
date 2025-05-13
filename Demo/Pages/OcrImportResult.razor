@@ -1,0 +1,150 @@
+﻿@page "/OcrImportResult"
+@using DevExpress.Blazor
+@using DevExpress.Blazor.RichEdit
+@using DBAccess.Model
+@using DBAccess.Common
+@inject IWebHostEnvironment Env
+
+@inherits Base
+
+<div class="navbar">
+    <a href="/Top">トップページ</a>
+    <a>/ <b>OCR取込結果・確認</b></a>
+</div>
+
+<br>
+
+<div class="grid-container">
+    <div class="grid-wrapper">
+        <div class="grid-title">OCR取込結果</div>
+        <DxGrid Data="@TOcrMotoList"
+                @ref="GridMoto"
+                CssClass="myGrid with-title"
+                AllowSort="false"
+                KeyFieldName="Id"
+                ColumnResizeMode="GridColumnResizeMode.ColumnsContainer"
+                VirtualScrollingEnabled="true"
+                SelectionMode="GridSelectionMode.Single"
+                FocusedRowEnabled="true"
+                TextWrapEnabled="false">
+            <Columns>
+                <DxGridDataColumn FieldName="RowNo" Caption="行番号" Width="60px" />
+                <DxGridDataColumn FieldName="Yyyy" Caption="年" Width="50px" />
+                <DxGridDataColumn FieldName="Mm" Caption="月" Width="50px" />
+                <DxGridDataColumn FieldName="Dd" Caption="日" Width="50px" />
+                <DxGridDataColumn FieldName="Apply" Caption="適用" Width="150px" />
+                <DxGridDataColumn FieldName="Apply2" Caption="適用2" Width="150px" />
+                <DxGridDataColumn FieldName="SiharaiKin" Caption="お支払金額" Width="120px" />
+                <DxGridDataColumn FieldName="AzukariKin" Caption="お預り金額" Width="120px" />
+                <DxGridDataColumn FieldName="Zandaka" Caption="残高" Width="120px" />
+            </Columns>
+        </DxGrid>
+    </div>
+    <div class="grid-wrapper">
+        <div class="grid-title">修正用（修正結果）</div>
+        <DxGrid Data="@TOcrList"
+                @ref="Grid"
+                CssClass="myGrid with-title"
+                AllowSort="false"
+                KeyFieldName="Id"
+                ColumnResizeMode="GridColumnResizeMode.ColumnsContainer"
+                VirtualScrollingEnabled="true"
+                SelectionMode="GridSelectionMode.Single"
+                FocusedRowEnabled="true"
+                EditMode="GridEditMode.EditCell"
+                @bind-SelectedDataItem="@SelectedDataItem"
+                FocusedRowChanged="OnFocusedRowChanged"
+                EditModelSaving="Grid_EditModelSaving"
+                DataItemDeleting="Grid_DataItemDeleting"
+                CustomizeEditModel="Grid_CustomizeEditModel"
+                TextWrapEnabled="false">
+            <Columns>
+                <DxGridDataColumn FieldName="RowNo" Caption="行番号" Width="60px" ReadOnly=true/>
+                <DxGridDataColumn FieldName="Yyyy" Caption="年" Width="50px" />
+                <DxGridDataColumn FieldName="Mm" Caption="月" Width="50px" />
+                <DxGridDataColumn FieldName="Dd" Caption="日" Width="50px" />
+                <DxGridDataColumn FieldName="Apply" Caption="適用" Width="150px" />
+                <DxGridDataColumn FieldName="Apply2" Caption="適用2" Width="150px" />
+                <DxGridDataColumn FieldName="SiharaiKin" Caption="お支払金額" Width="120px" />
+                <DxGridDataColumn FieldName="AzukariKin" Caption="お預り金額" Width="120px" />
+                <DxGridDataColumn FieldName="Zandaka" Caption="残高" Width="120px" />
+            </Columns>
+        </DxGrid>
+    </div>
+
+</div>
+<DxFormLayout CssClass="b-100">
+    <DxFormLayoutItem ColSpanLg="11" ColSpanMd="11">
+        <DxButton Text="確定"  style="margin-top:5px" />
+    </DxFormLayoutItem>
+</DxFormLayout>
+<br>
+@if (!string.IsNullOrEmpty(ImagePath))
+{
+    <img src="@ImagePath" alt="取込みイメージ" style="max-width: 1300px; max-height: 1200px;" />
+}
+
+<style>
+    .navbar {
+        justify-content: left;
+        background-color: #f0f0f0; /* 背景色を淡い灰色にする */
+        padding: 10px; /* 上下左右に余白をつける */
+    }
+
+        .navbar a {
+            color: #000; /* テキスト色 */
+            padding: 0 5px; /* 各リンク間にスペースをつける */
+        }
+
+    .caption {
+        font-weight: 800;
+    }
+
+    .dx-demo-radio-group-label {
+        font-size: inherit;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+        .dx-demo-radio-group-label.dx-demo-small {
+            font-size: 0.75rem;
+        }
+
+        .dx-demo-radio-group-label.dx-demo-large {
+            font-size: 1rem;
+        }
+
+    .dx-demo-radio-group {
+        padding-bottom: 1rem;
+    }
+
+    .dx-demo-radio-selected-value {
+        max-width: 480px;
+        width: 100%;
+    }
+
+    .grid-container {
+        display: flex;
+        gap: 14px; /* グリッド間のスペース */
+    }
+    .grid-wrapper {
+        flex: 1; /* グリッドを均等に配置 */
+        position: relative; /* タイトルを絶対位置で配置するための基準 */
+    }
+    .grid-title {
+        position: absolute;
+        top: -6px; /* グリッドの上に配置 */
+        left: 10px;
+        background-color: rgba(255, 255, 255, 0.9); /* 背景を半透明にして見やすくする */
+        padding: 5px 10px;
+        font-weight: bold;
+        z-index: 1; /* グリッドより前面に表示 */
+        border-radius: 4px; /* 角を少し丸める */
+    }
+    .myGrid.with-title {
+        margin-top: 30px; /* タイトル分の余白を追加 */
+    }
+    .myGrid {
+        height: 500px; /* 必要に応じて高さを調整 */
+    }
+</style>

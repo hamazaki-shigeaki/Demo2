@@ -1,0 +1,16 @@
+﻿@page "/Pdf"
+@using DevExpress.Blazor
+@using DevExpress.Blazor.RichEdit
+@using DBAccess.Model
+@using DBAccess.Common
+
+@inherits Base
+
+<div class="navbar">
+    <a href="/Top">トップページ</a>
+    <a>/ <b>OCR取込</b></a>
+</div>
+
+<DxPdfViewer CssClass="w-100 pdf-viewer"
+             CustomizeToolbar="OnCustomizeToolbar"
+             DocumentContent="DocumentContent" />

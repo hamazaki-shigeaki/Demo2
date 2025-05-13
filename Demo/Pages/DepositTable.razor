@@ -1,0 +1,244 @@
+﻿@page "/DepositTable"
+@using DevExpress.Blazor
+@using System.Reflection
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+@using DBAccess.Model;
+@inject NavigationManager NavigationManager
+@inherits Base
+
+<div class="navbar">
+    <a href="/Top">トップページ</a>
+    <a>/ <b>入出金表</b></a>
+</div>
+
+<br>
+<DxFormLayout>
+    <DxFormLayoutItem ColSpanLg="3" ColSpanMd="3" BeginRow=true Caption="案件番号">
+        <Template>
+            <DxTextBox @bind-Text="SuitNo" ReadOnly=true style="width:430px"/>
+        </Template>
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanLg="2" ColSpanMd="2" Caption="金額">
+        <Template>
+            <DxSpinEdit @bind-Value="@Kingaku" ShowSpinButtons="false" DisplayFormat="#,##0" CssClass="my-spin" />
+        </Template>
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanLg="1" ColSpanMd="1" Caption="円 以上">
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanLg="2" ColSpanMd="2">
+        <Template>
+        <DxButton Text="検索" Click="OnButtonSelect"  />
+        </Template>
+    </DxFormLayoutItem>
+
+</DxFormLayout>
+<br>
+
+<DxFormLayout CaptionPosition="CaptionPosition.Vertical" CssClass="w-100">
+    <DxFormLayoutItem ColSpanMd="1">
+        <DxButton Text="クリア" Click="OnClear" />
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanMd="2">
+        <DxCheckBox @bind-Checked="@OnFilterRow">ﾌｨﾙﾀｰ行</DxCheckBox>
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanMd="2">
+        <DxCheckBox @bind-Checked="@OnGroupRow">ｸﾞﾙｰﾌﾟ行</DxCheckBox>
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+<DxGrid Data="@MDepositTableList"
+        @ref="Grid"
+        CssClass="myGrid"
+        AllowSort="true"
+        KeyFieldName="Id"
+        ColumnResizeMode="GridColumnResizeMode.ColumnsContainer"
+        VirtualScrollingEnabled="true"
+        EditMode="GridEditMode.PopupEditForm"
+        SelectionMode="GridSelectionMode.Single"
+        FocusedRowEnabled="true"
+        @bind-SelectedDataItem="@SelectedDataItem"
+        ShowFilterRow="@OnFilterRow"
+        ShowGroupPanel="@OnGroupRow"
+        FocusedRowChanged="OnFocusedRowChanged"
+        CustomizeEditModel="Grid_CustomizeEditModel"
+        EditModelSaving="Grid_EditModelSaving"
+        DataItemDeleting="Grid_DataItemDeleting"
+        TextWrapEnabled="false">
+    <Columns>
+        <DxGridCommandColumn Width="180px" Caption="アクション">
+        </DxGridCommandColumn>
+        <DxGridDataColumn FieldName="AccessDate" Caption="処理日" Width="150px" />
+        <DxGridDataColumn FieldName="Apply" Caption="適用" Width="300px" />
+        <DxGridDataColumn FieldName="SourcePayment" Caption="買掛先" Width="200px" />
+        <DxGridDataColumn FieldName="AccountsPayable" Caption="買掛金" Width="160px" />
+        <DxGridDataColumn FieldName="PaymentDestination" Caption="売掛先" Width="200px" />
+        <DxGridDataColumn FieldName="AccountsReceivable" Caption="売掛金" Width="160px" />
+        <DxGridDataColumn FieldName="Memo" Caption="メモ" Width="160px" />
+    </Columns>
+    <TotalSummary>
+        <DxGridSummaryItem SummaryType="GridSummaryItemType.Sum" FieldName="AccountsReceivable" />
+        <DxGridSummaryItem SummaryType="GridSummaryItemType.Sum" FieldName="AccountsPayable" />
+    </TotalSummary>
+    <EditFormTemplate Context="EditFormContext">
+        <DxFormLayout>
+            <DxFormLayoutItem Caption="取引日" ColSpanMd="2" BeginRow="true">
+                <DxDateEdit @bind-Date="EntryData.AccessDate" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="適用" ColSpanMd="4" BeginRow="true">
+                <DxTextBox @bind-Text="EntryData.Apply" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="買掛先" ColSpanMd="4" BeginRow="true">
+                <DxTextBox @bind-Text="EntryData.PaymentDestination" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="買掛金" ColSpanMd="4">
+                <DxSpinEdit @bind-Value="EntryData.AccountsReceivable" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="売掛先" ColSpanMd="4" BeginRow="true">
+                <DxTextBox @bind-Text="EntryData.SourcePayment" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="売掛金" ColSpanMd="4">
+                <DxSpinEdit @bind-Value="EntryData.AccountsPayable" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="メモ" ColSpanMd="4" BeginRow="true">
+                <DxTextBox @bind-Text="EntryData.Memo" />
+            </DxFormLayoutItem>
+        </DxFormLayout>
+    </EditFormTemplate>
+</DxGrid>
+
+<DxFormLayout CssClass="b-100">
+    <DxFormLayoutItem ColSpanLg="11" ColSpanMd="11">
+        <DxButton Text="Ecel出力" style="margin-top:5px" Click="OnButtonExcel" Enabled="@EnabledButtonPrint" />
+        <DxButton Text="OCR取込" style="margin-top:5px" Click="OnButtonOcr" />
+        <DxButton Text="バッチOCR取込" style="margin-top:5px" Click="OnButtonOcrImport" />
+        <DxButton Text="戻る" Click="OnButtonReturn" style="margin-top:5px" />
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+<style>
+    .my-spin input {
+        text-align: right;
+    }
+
+    .button_end {
+        position: absolute;
+        right: 0;
+    }
+
+    .myGrid {
+        height: 465px;
+    }
+
+    .b-100 {
+        padding: 10px;
+    }
+
+    .dxbl-modal {
+        --dxbl-popup-max-width: 1200px;
+    }
+
+    .w-1200 {
+        width: 1200px;
+    }
+
+
+    .filter-switch-row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .filter-checkboxes {
+        display: flex;
+        justify-content: flex-start;
+        width: 80%;
+    }
+
+    .filter-checkbox {
+        width: 150px;
+    }
+
+    .select_title {
+        font-weight: bolder;
+    }
+
+    .navbar {
+        justify-content: left;
+        background-color: #f0f0f0; /* 背景色を淡い灰色にする */
+        padding: 10px; /* 上下左右に余白をつける */
+    }
+
+        .navbar a {
+            color: #000; /* テキスト色 */
+            padding: 0 5px; /* 各リンク間にスペースをつける */
+        }
+
+    .caption {
+        font-weight: 800;
+    }
+
+    .dx-demo-radio-group-label {
+        font-size: inherit;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+        .dx-demo-radio-group-label.dx-demo-small {
+            font-size: 0.75rem;
+        }
+
+        .dx-demo-radio-group-label.dx-demo-large {
+            font-size: 1rem;
+        }
+
+    .dx-demo-radio-group {
+        padding-bottom: 1rem;
+    }
+
+    .dx-demo-radio-selected-value {
+        max-width: 480px;
+        width: 100%;
+    }
+
+    .panel {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: #f9f9f9;
+    }
+
+
+    .wrapper {
+        margin: 20px;
+    }
+
+    .upload-container,
+    .upload-container > div:first-child {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .drop-file-icon {
+        background-size: contain;
+        mask-repeat: no-repeat;
+        -webkit-mask-repeat: no-repeat;
+        background-position: center center;
+        background-color: #ADB5BD;
+        width: 48px;
+        height: 48px;
+        -webkit-mask-image: url("../images/icons/drop-file.svg");
+        mask-image: url("../images/icons/drop-file.svg");
+    }
+
+    .drop-file-label {
+        font-weight: 510;
+        font-size: 1rem;
+    }
+
+    .cancelBt {
+        margin-left: 30px;
+    }
+</style>

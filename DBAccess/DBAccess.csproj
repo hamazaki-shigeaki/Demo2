@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants></DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Model\TUser.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resource\SQL_GET_COMB_BANK.txt" />
+    <None Remove="Resource\SQL_GET_COMB_DAIRISHO_KANRI.txt" />
+    <None Remove="Resource\SQL_GET_COMB_eigyouHinmokuCd.txt" />
+    <None Remove="Resource\SQL_GET_COMB_GYOUSYUNO.txt" />
+    <None Remove="Resource\SQL_GET_COMB_SITEN.txt" />
+    <None Remove="Resource\SQL_GET_COMB_SYOUHIN.txt" />
+    <None Remove="Resource\SQL_GET_COMB_TANTOUSYA.txt" />
+    <None Remove="Resource\SQL_GET_HI_KYOUSAISYA.txt" />
+    <None Remove="Resource\SQL_GET_JIGYOSHO_SHOKAI.txt" />
+    <None Remove="Resource\SQL_GET_M_BOOK.txt" />
+    <None Remove="SQL\SQL_GET_COMB_DAIRISHO.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resource\SQL_GET_M_BOOK.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.35" />
+    <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.149" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0-rc.1.20451.13" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dbflute\Dbflute.csproj" />
+    <ProjectReference Include="..\LogWriter\LogWriter.csproj" />
+    <ProjectReference Include="..\Utilities\Utilities\Utilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="BSAccessores\" />
+    <Folder Include="Dao\" />
+    <Folder Include="Model\" />
+  </ItemGroup>
+
+</Project>

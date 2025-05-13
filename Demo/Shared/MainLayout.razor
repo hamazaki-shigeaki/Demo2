@@ -1,0 +1,133 @@
+﻿@using Demo.ViewModel
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+
+<PageTitle>入出金管理</PageTitle>
+
+@if (IsFastDisplay)
+{
+    <div class="login_wrapper">
+        <div class="login_wrap">
+            <br>
+            <br>
+            <br>
+            <div class="login_contents">
+                <div class="login_form">
+                    <EditForm Context="EditFormContext"
+                              OnValidSubmit="@HandleValidSubmit"
+                              OnInvalidSubmit="@HandleInvalidSubmit"
+                              Model="@FormModel">
+                        <DataAnnotationsValidator />
+                        <DxFormLayout>
+                            <DxFormLayoutItem Caption="" ColSpanMd="4" BeginRow=true>
+                                <Template>
+                                </Template>
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem Caption="" ColSpanMd="2" CssClass="login_form_item">
+                                <Template>
+                                    <DxTextBox CssClass="userId" @bind-Text="@FormModel.UserId" NullText="ログインID" style="width:250px" />
+                                    <ValidationMessage For=@(() => FormModel.UserId) />
+                                </Template>
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem Caption="" ColSpanMd="4" BeginRow="true">
+                                <Template>
+                                </Template>
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem Caption="" ColSpanMd="2" CssClass="login_form_item">
+                                <Template>
+                                    <DxTextBox @bind-Text="@FormModel.PassWord" Password="true" NullText="パスワード" style="width:250px" />
+                                    <ValidationMessage For=@(() => FormModel.PassWord) />
+                                </Template>
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem Caption="" ColSpanMd="4" BeginRow="true">
+                                <Template>
+                                </Template>
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem Caption="" ColSpanMd="4" BeginRow="true">
+                                <Template>
+                                </Template>
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem ColSpanMd="3" CssClass="login_form_item" >
+                                <Template>
+                                    <DxButton SubmitFormOnClick="true" Text="ログイン" CssClass="login_btn" />
+                                </Template>
+                            </DxFormLayoutItem>
+                        </DxFormLayout>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <DxLayoutBreakpoint MaxWidth="1200"
+                        @bind-IsActive="@IsMobileLayout" />
+
+    <div class="page">
+        <DxGridLayout CssClass="page-layout">
+            <Rows>
+                @if (IsMobileLayout)
+                {
+                    <DxGridLayoutRow Areas="header" Height="auto"></DxGridLayoutRow>
+                    <DxGridLayoutRow Areas="sidebar" Height="auto"></DxGridLayoutRow>
+                    <DxGridLayoutRow Areas="content" />
+                }
+                else
+                {
+                    <DxGridLayoutRow Areas="header header" Height="auto" />
+                    <DxGridLayoutRow Areas="@(IsSidebarExpanded ? "sidebar content" : "content content")" />
+                }
+            </Rows>
+            <Columns>
+                @if (!IsMobileLayout)
+                {
+                    <DxGridLayoutColumn Width="auto" />
+                    <DxGridLayoutColumn />
+                }
+            </Columns>
+            <Items>
+                <DxGridLayoutItem Area="header" CssClass="layout-item">
+                    <Template>
+                        <Header @bind-ToggleOn="@IsSidebarExpanded" />
+                    </Template>
+                </DxGridLayoutItem>
+                <DxGridLayoutItem Area="sidebar" CssClass="layout-item">
+                    <Template>
+                        <NavMenu StateCssClass="@NavMenuCssClass" />
+                    </Template>
+                </DxGridLayoutItem>
+                <DxGridLayoutItem Area="content" CssClass="content px-4 layout-item">
+                    <Template>
+                        @Body
+                    </Template>
+                </DxGridLayoutItem>
+            </Items>
+        </DxGridLayout>
+    </div>
+}
+<style>
+    .login_wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh; /* 画面全体の高さを確保 */
+        background-color: #f5f5f5; /* 必要に応じて背景色を設定 */
+    }
+
+    .login_wrap {
+        background-color: white; /* フォームの背景色 */
+        padding: 20px; /* フォームの内側の余白 */
+        border-radius: 8px; /* 角を丸める */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 影を追加 */
+    }
+
+    .login_form_item {
+        margin-bottom: 15px; /* 各入力フィールドの間隔を調整 */
+    }
+
+    .login_btn {
+        width: 100%; /* ボタンをフォームの幅に合わせる */
+    }
+</style>

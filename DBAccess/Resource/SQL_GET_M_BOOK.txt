@@ -1,0 +1,4 @@
+﻿SELECT a.*
+  FROM m_book a
+ INNER JOIN m_suit b
+    ON b.suit_id = a.suit_id

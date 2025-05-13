@@ -1,0 +1,276 @@
+﻿@page "/Document"
+@using DevExpress.Blazor
+@using System.Reflection
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+@using DBAccess.Model;
+@inject NavigationManager NavigationManager
+@inherits Base
+
+<div class="navbar">
+    <a href="/Top">トップページ</a>
+    <a>/ 案件一覧</a>
+    <a>/ <b>預かり文書</b></a>
+</div>
+
+<br>
+<DxFormLayout>
+    <DxFormLayoutItem ColSpanLg="3" ColSpanMd="3" BeginRow=true Caption="案件番号">
+        <Template>
+            <DxTextBox @bind-Text="SuitNo" ReadOnly=true style="width:450px"/>
+        </Template>
+    </DxFormLayoutItem>
+</DxFormLayout>
+<br>
+
+<DxFormLayout CaptionPosition="CaptionPosition.Vertical" CssClass="w-100">
+    <DxFormLayoutItem ColSpanMd="1" >
+        <DxButton Text="クリア" Click="OnClear" />
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanMd="2">
+        <DxCheckBox @bind-Checked="@OnFilterRow">ﾌｨﾙﾀｰ行</DxCheckBox>
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanMd="2">
+        <DxCheckBox @bind-Checked="@OnGroupRow">ｸﾞﾙｰﾌﾟ行</DxCheckBox>
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+<DxGrid Data="@MDocumentList"
+        @ref="Grid"
+        CssClass="myGrid"
+        AllowSort="true"
+        KeyFieldName="Id"
+        ColumnResizeMode="GridColumnResizeMode.ColumnsContainer"
+        VirtualScrollingEnabled="true"
+        @bind-SelectedDataItem="@SelectedDataItem"
+        EditMode="GridEditMode.PopupEditForm"
+        SelectionMode="GridSelectionMode.Single"
+        FocusedRowEnabled="true"
+        ShowFilterRow="@OnFilterRow"
+        ShowGroupPanel="@OnGroupRow"
+        CustomizeEditModel="Grid_CustomizeEditModel"
+        EditModelSaving="Grid_EditModelSaving"
+        DataItemDeleting="Grid_DataItemDeleting"
+        TextWrapEnabled="false">
+    <Columns>
+        <DxGridCommandColumn Width="160px" Caption="アクション">
+            <CellDisplayTemplate>
+                <DxButton IconCssClass="oi oi-eye" Click="() => OnClickPdfOpen(context.DataItem)" />
+                <DxButton Click="() => context.Grid.StartEditRowAsync(context.VisibleIndex)" IconCssClass="oi oi-pencil" />
+                <DxButton Click="() => context.Grid.ShowDataItemDeleteConfirmation(context.DataItem)" IconCssClass="oi oi-x" Enabled="context.DeleteEnabled" />
+            </CellDisplayTemplate>
+        </DxGridCommandColumn>
+        <DxGridDataColumn FieldName="DocumentNo" Caption="文書番号" Width="80px" />
+        <DxGridDataColumn FieldName="StrDocClassification" Caption="文書区分" Width="180px" />
+        <DxGridDataColumn FieldName="DocName" Caption="文書名" Width="180px" />
+        <DxGridDataColumn FieldName="Contents" Caption="内容" Width="200px" />
+        <DxGridDataColumn FieldName="FolderName" Caption="フォルダー" Width="500px" />
+        <DxGridDataColumn FieldName="FileName" Caption="ファイル名" Width="160px" />
+    </Columns>
+    <EditFormTemplate Context="EditFormContext">
+        <DxFormLayout>
+            <DxFormLayoutItem Caption="文書番号" ColSpanMd="6" BeginRow="true">
+                <DxTextBox @bind-Text="EntryData.DocumentNo" ReadOnly=true  />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="文書区分" ColSpanMd="6">
+                <DxComboBox Data="@CombDocClassificationList"
+                            TextFieldName="@nameof(CommonCombBox.Text)"
+                            @bind-Value="EntryData.DocClassification" />
+                <ValidationMessage For="@(() => EntryData.DocClassification)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="文書名" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.DocName" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.DocName)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="内容" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.Contents" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.Contents)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="フォルダー" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.FolderName" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.FolderName)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="ファイル名" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.FileName" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.FileName)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="" ColSpanMd="2" >
+                <DxButton Text="ファイルアップロード" Click="OnButtonUpload" />
+            </DxFormLayoutItem>
+        </DxFormLayout>
+    </EditFormTemplate>
+</DxGrid>
+
+<DxFormLayout CssClass="b-100">
+    <DxFormLayoutItem >
+        <DxButton Text="印刷" style="margin-top:5px" />
+        <DxButton Text="戻る" Click="OnButtonReturn" style="margin-top:5px" />
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+<DxPopup Width="800px"
+         Height="400px"
+         CssClass="PopupCss"
+         @bind-Visible="@PopupVisible"
+         HeaderText="書類取込">
+    <BodyContentTemplate>
+        <div id="overviewDemoDropZone" class="card custom-drop-zone rounded-3 w-100 m-0">
+            <span class="drop-file-icon mb-3"></span>
+            <span class="drop-file-label">Drag and Drop File Here</span><span class="m-1">or</span>
+            <DxButton Id="overviewDemoSelectButton"
+                      CssClass="m-1"
+                      RenderStyle="ButtonRenderStyle.Primary"
+                      dir="C:\\OBS\\01.src\\Demo\\Demo\\wwwroot\\download"
+                      Text="Select File" />
+        </div>
+        <DxUpload Name="myFile"
+                  Visible="@UploadVisible"
+                  ExternalSelectButtonCssSelector="#overviewDemoSelectButton"
+                  ExternalDropZoneCssSelector="#overviewDemoDropZone"
+                  ExternalDropZoneDragOverCssClass="custom-drop-zone-hover"
+                  MaxFileSize="15000000"
+                  UploadUrl="@GetUploadUrl("api/UploadDocument/UploadDocument/")"
+                  SelectedFilesChanged="@SelectedFilesChanged">
+        </DxUpload>
+        <DxButton Text="閉じる" Click="OnButtonClose" style="margin-top:5px" />
+
+    </BodyContentTemplate>
+</DxPopup>
+
+<DxPopup Width="1200px"
+         Height="1100px"
+         @bind-Visible="@PopupPdfVisible"
+         HeaderText="書類表示">
+    <BodyContentTemplate>
+        <div class="control-section">
+            <SfPdfViewerServer @ref="pdfViewer"
+                               DocumentPath="@PdfPath"
+                               Width="1060px"
+                               Height="1000px">
+            </SfPdfViewerServer>
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+<style>
+    .button_end {
+        position: absolute;
+        right: 0;
+    }
+
+    .myGrid {
+        height: 465px;
+    }
+
+    .b-100 {
+        padding: 10px;
+    }
+
+    .dxbl-modal {
+        --dxbl-popup-max-width: 1200px;
+    }
+
+    .w-1200 {
+        width: 1200px;
+    }
+
+
+    .filter-switch-row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .filter-checkboxes {
+        display: flex;
+        justify-content: flex-start;
+        width: 80%;
+    }
+
+    .filter-checkbox {
+        width: 150px;
+    }
+
+    .select_title {
+        font-weight: bolder;
+    }
+
+    .navbar {
+        justify-content: left;
+        background-color: #f0f0f0; /* 背景色を淡い灰色にする */
+        padding: 10px; /* 上下左右に余白をつける */
+    }
+
+        .navbar a {
+            color: #000; /* テキスト色 */
+            padding: 0 5px; /* 各リンク間にスペースをつける */
+        }
+
+    .caption {
+        font-weight: 800;
+    }
+
+    .dx-demo-radio-group-label {
+        font-size: inherit;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+        .dx-demo-radio-group-label.dx-demo-small {
+            font-size: 0.75rem;
+        }
+
+        .dx-demo-radio-group-label.dx-demo-large {
+            font-size: 1rem;
+        }
+
+    .dx-demo-radio-group {
+        padding-bottom: 1rem;
+    }
+
+    .dx-demo-radio-selected-value {
+        max-width: 480px;
+        width: 100%;
+    }
+
+    .panel {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: #f9f9f9;
+    }
+
+
+    .wrapper {
+        margin: 20px;
+    }
+
+    .upload-container,
+    .upload-container > div:first-child {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .drop-file-icon {
+        background-size: contain;
+        mask-repeat: no-repeat;
+        -webkit-mask-repeat: no-repeat;
+        background-position: center center;
+        background-color: #ADB5BD;
+        width: 48px;
+        height: 48px;
+        -webkit-mask-image: url("../images/icons/drop-file.svg");
+        mask-image: url("../images/icons/drop-file.svg");
+    }
+
+    .drop-file-label {
+        font-weight: 510;
+        font-size: 1rem;
+    }
+
+    .cancelBt {
+        margin-left: 30px;
+    }
+</style>

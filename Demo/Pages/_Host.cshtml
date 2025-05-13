@@ -1,0 +1,43 @@
+﻿@page "/"
+@namespace Demo.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_Layout";
+}
+
+<component type="typeof(App)" render-mode="ServerPrerendered" />
+
+<script>
+    // エラー
+    async function Mes_Error(message) {
+        await alert(message);
+    }
+    // 成功
+    async function Mes_Success(message) {
+        await alert(message);
+    }
+    // 情報
+    async function Mes_info(message) {
+        await alert(message);
+    }
+    // 問い合わせ
+    async function Mes_Confirm(message) {
+        if (confirm(message)) {
+            return 'true';
+        } else {
+            return 'false';
+        }
+    }
+
+    // ファイルダウンロード
+    function DownLoad(fileName) {
+        const link = document.createElement('a');
+        link.setAttribute("type", "hidden");
+        link.href = './DownLoad/' + fileName;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        link.remove();
+    }
+</script>

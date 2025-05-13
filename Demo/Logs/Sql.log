@@ -1,0 +1,20 @@
+2024-09-20 14:53:23,984  INFO - SQL:select dfloc.uniq_num, dfloc.kubun_id, dfloc.code, dfloc.name, dfloc.register_user, dfloc.register_datetime, dfloc.register_process, dfloc.update_user, dfloc.update_datetime, dfloc.update_process 
+  from m_kubun dfloc 
+2024-09-20 14:53:23,988  INFO - SQL:
+2024-09-20 14:53:24,659  INFO - SQL:select dfloc.uniq_num, dfloc.bank_cd, dfloc.siten_cd, dfloc.bank_name, dfloc.bank_name_kana, dfloc.branch_name, dfloc.branch_name_kana, dfloc.register_user, dfloc.register_datetime, dfloc.register_process, dfloc.update_user, dfloc.update_datetime, dfloc.update_process 
+  from m_bank dfloc 
+2024-09-20 14:53:24,659  INFO - SQL:
+2024-09-20 14:53:24,746  INFO - SQL:select dfloc.uniq_num, dfloc.suit_no, dfloc.syohin_bunrui_cd, dfloc.kanjyouten_cd, dfloc.renkeiten_cd, dfloc.uketuketen_cd, dfloc.hi_souzokunin_cif, dfloc.hi_souzkunin_name, dfloc.tetuzukinin_cif, dfloc.tetuzukinin_name, dfloc.tetuzukinin_zokugara, dfloc.uketukesya, dfloc.tetuzukinin_renrakusaki, dfloc.tetuzki_pattern, dfloc.souzoku_kigen_umu, dfloc.todokede_date, dfloc.uketuke_date, dfloc.sibou_date, dfloc.register_user, dfloc.register_datetime, dfloc.register_process, dfloc.update_user, dfloc.update_datetime, dfloc.update_process 
+  from m_suit dfloc 
+2024-09-20 14:53:24,746  INFO - SQL:
+2024-09-20 14:53:28,329  INFO - SQL:select dfloc.uniq_num, dfloc.kubun_id, dfloc.code, dfloc.name, dfloc.register_user, dfloc.register_datetime, dfloc.register_process, dfloc.update_user, dfloc.update_datetime, dfloc.update_process 
+  from m_kubun dfloc 
+2024-09-20 14:53:28,329  INFO - SQL:
+2024-09-20 14:53:28,336  INFO - SQL:SELECT a.*,
+       b.tetuzki_pattern
+  FROM m_book a
+ INNER JOIN m_suit b
+    ON b.suit_no = a.suit_no
+2024-09-20 14:53:38,447  INFO - SQL:select dfloc.uniq_num, dfloc.kubun_id, dfloc.code, dfloc.name, dfloc.register_user, dfloc.register_datetime, dfloc.register_process, dfloc.update_user, dfloc.update_datetime, dfloc.update_process 
+  from m_kubun dfloc 
+2024-09-20 14:53:38,447  INFO - SQL:

@@ -1,0 +1,219 @@
+﻿@page "/MenteMStaff"
+@using DevExpress.Blazor
+@using DBAccess.Model
+@inherits Base
+
+<div class="navbar">
+    <a href="/SuitEntry">トップページ</a>
+    <a>/ メンテ</a>
+    <a>/ スタッフマスタ</a>
+</div>
+
+<br>
+<a>スタッフマスタ一覧</a>
+<br>
+
+<DxFormLayout CaptionPosition="CaptionPosition.Vertical" CssClass="w-100">
+    <DxFormLayoutItem ColSpanMd="1" >
+        <DxButton Text="クリア" Click="OnClear" />
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanMd="2">
+        <DxCheckBox @bind-Checked="@OnFilterRow">ﾌｨﾙﾀｰ行</DxCheckBox>
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanMd="2">
+        <DxCheckBox @bind-Checked="@OnGroupRow">ｸﾞﾙｰﾌﾟ行</DxCheckBox>
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+
+<DxGrid Data="@MStaffList"
+        @ref="Grid"
+        CssClass="myGrid"
+        AllowSort="true"
+        KeyFieldName="Id"
+        ColumnResizeMode="GridColumnResizeMode.ColumnsContainer"
+        VirtualScrollingEnabled="true"
+        @bind-SelectedDataItem="@SelectedDataItem"
+        CustomizeEditModel="Grid_CustomizeEditModel"
+        EditModelSaving="Grid_EditModelSaving"
+        DataItemDeleting="Grid_DataItemDeleting"
+        EditMode="GridEditMode.PopupEditForm"
+        SelectionMode="GridSelectionMode.Single"
+        FocusedRowEnabled="true"
+        ShowFilterRow="@OnFilterRow"
+        ShowGroupPanel="@OnGroupRow"
+        TextWrapEnabled="false">
+    <Columns>
+        <DxGridCommandColumn Width="120px" Caption="アクション">
+        </DxGridCommandColumn>
+        <DxGridDataColumn FieldName="StaffId" Caption="スタッフCD" Width="90px" />
+        <DxGridDataColumn FieldName="FullName" Caption="氏名" Width="130px" />
+        <DxGridDataColumn FieldName="Kana" Caption="氏名カナ" Width="130px" />
+        <DxGridDataColumn FieldName="DisplaySex" Caption="性別" Width="80px" />
+        <DxGridDataColumn FieldName="DateOfHire" Caption="入社日" Width="120px" />
+        <DxGridDataColumn FieldName="DisplaySitenCd" Caption="支店" Width="auto" />
+    </Columns>
+    <EditFormTemplate Context="EditFormContext">
+        <DxFormLayout>
+            <DxFormLayoutItem Caption="スタッフCD" ColSpanMd="6" BeginRow="true">
+                <DxTextBox @bind-Text="EntryData.StaffId" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="氏名" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.FullName" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.FullName)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="氏名カナ" ColSpanMd="6">
+                <DxTextBox @bind-Text="EntryData.Kana" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.Kana)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="性別" ColSpanMd="6" BeginRow=true>
+                <DxComboBox Data="@CombSexiList"
+                            TextFieldName="@nameof(CommonCombBox.Text)"
+                            @bind-Value="EntryData.Sex" />
+                <ValidationMessage For="@(() => EntryData.Sex)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="入社日" ColSpanMd="6">
+                <DxDateEdit @bind-Date="EntryData.DateOfHire" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.DateOfHire)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="支店" ColSpanMd="6" BeginRow=true>
+                <DxComboBox Data="@CombBankiList"
+                            TextFieldName="@nameof(CommonCombBox.Text)"
+                            @bind-Value="EntryData.SitenCd" />
+                <ValidationMessage For="@(() => EntryData.SitenCd)" />
+            </DxFormLayoutItem>
+        </DxFormLayout>
+    </EditFormTemplate>
+</DxGrid>
+
+<DxFormLayout CssClass="b-100">
+    <DxFormLayoutItem ColSpanLg="11" ColSpanMd="11" >
+        <DxButton Text="戻る" Click="OnButtonReturn" style="margin-top:5px" />
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+
+<style>
+    .button_end {
+        position: absolute;
+        right: 0;
+    }
+
+    .myGrid {
+        height: 465px;
+        width: 980px;
+    }
+
+    .b-100 {
+        padding: 10px;
+    }
+
+    .dxbl-modal {
+        --dxbl-popup-max-width: 1200px;
+    }
+
+    .w-1200 {
+        width: 1200px;
+    }
+
+
+    .filter-switch-row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .filter-checkboxes {
+        display: flex;
+        justify-content: flex-start;
+        width: 80%;
+    }
+
+    .filter-checkbox {
+        width: 150px;
+    }
+
+    .select_title {
+        font-weight: bolder;
+    }
+
+    .navbar {
+        justify-content: left;
+        background-color: #f0f0f0; /* 背景色を淡い灰色にする */
+        padding: 10px; /* 上下左右に余白をつける */
+    }
+
+        .navbar a {
+            color: #000; /* テキスト色 */
+            padding: 0 5px; /* 各リンク間にスペースをつける */
+        }
+
+    .caption {
+        font-weight: 800;
+    }
+
+    .dx-demo-radio-group-label {
+        font-size: inherit;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+        .dx-demo-radio-group-label.dx-demo-small {
+            font-size: 0.75rem;
+        }
+
+        .dx-demo-radio-group-label.dx-demo-large {
+            font-size: 1rem;
+        }
+
+    .dx-demo-radio-group {
+        padding-bottom: 1rem;
+    }
+
+    .dx-demo-radio-selected-value {
+        max-width: 480px;
+        width: 100%;
+    }
+
+    .panel {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: #f9f9f9;
+    }
+
+
+    .wrapper {
+        margin: 20px;
+    }
+
+    .upload-container,
+    .upload-container > div:first-child {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .drop-file-icon {
+        background-size: contain;
+        mask-repeat: no-repeat;
+        -webkit-mask-repeat: no-repeat;
+        background-position: center center;
+        background-color: #ADB5BD;
+        width: 48px;
+        height: 48px;
+        -webkit-mask-image: url("../images/icons/drop-file.svg");
+        mask-image: url("../images/icons/drop-file.svg");
+    }
+
+    .drop-file-label {
+        font-weight: 510;
+        font-size: 1rem;
+    }
+
+    .cancelBt {
+        margin-left: 30px;
+    }
+</style>

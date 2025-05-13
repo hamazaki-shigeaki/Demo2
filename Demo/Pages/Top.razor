@@ -1,0 +1,139 @@
+﻿@page "/Top"
+@inherits Base
+
+<DxGridLayout CssClass="w-100 ch-480">
+    <Rows>
+        <DxGridLayoutRow Height="30px" />
+        <DxGridLayoutRow Height="100px" />
+        <DxGridLayoutRow Height="30px" />
+        <DxGridLayoutRow Height="100px" />
+        <DxGridLayoutRow Height="30px" />
+        <DxGridLayoutRow Height="100px" />
+    </Rows>
+    <Columns>
+        <DxGridLayoutColumn Width="25%" />
+        <DxGridLayoutColumn Width="7%" />
+        <DxGridLayoutColumn Width="25%" />
+    </Columns>
+    <Items>
+        <DxGridLayoutItem Row="1" Column="0">
+            <Template>
+                <DxButton Text="受付開始"  RenderStyle="ButtonRenderStyle.Primary" CssClass="new_entry" />
+            </Template>
+        </DxGridLayoutItem>
+        <DxGridLayoutItem Row="3" Column="0">
+            <Template>
+                <DxButton Text="処理中" Click="OnOcrImportResult" RenderStyle="ButtonRenderStyle.Primary" CssClass="new_entry" />
+            </Template>
+        </DxGridLayoutItem>
+        <DxGridLayoutItem Row="5" Column="0">
+            <Template>
+                <DxButton Text="処理完了"  RenderStyle="ButtonRenderStyle.Primary" CssClass="new_entry" />
+            </Template>
+        </DxGridLayoutItem>
+        <DxGridLayoutItem Row="1" Column="2">
+            <Template>
+                <div class="gridlayout-content gridlayout-item">
+                    @DispKensu01
+                </div>
+            </Template>
+        </DxGridLayoutItem>
+        <DxGridLayoutItem Row="3" Column="2">
+            <Template>
+                <div class="gridlayout-content gridlayout-item">
+                    @DispKensu02
+                </div>
+            </Template>
+        </DxGridLayoutItem>
+        <DxGridLayoutItem Row="5" Column="2">
+            <Template>
+                <div class="gridlayout-content gridlayout-item">
+                    @DispKensu03
+                </div>
+            </Template>
+        </DxGridLayoutItem>
+    </Items>
+</DxGridLayout>
+<style>
+
+    .toprow{
+        background-color: #f0f0f0; /* 背景色を淡い灰色にする */
+        padding: 10px; /* 上下左右に余白をつける */
+        display: block;
+    }
+
+    .new_entry{
+        font-family: 'BIZ UDGothic';
+        font-size: 36px;
+        font-weight: 500;
+        text-align: center;
+        height: 100%;
+        width: 100%;
+        padding: 0.5rem;
+        text-align: center;
+        position: relative;
+        z-index: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .gridlayout-item-title {
+        font-family:Meiryo;
+        font-size: 20px;
+        font-weight: 500;
+        text-align: center;
+        height: 100%;
+        padding: 0.5rem;
+        text-align: center;
+        position: relative;
+        z-index: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .gridlayout-item {
+        font-family: 'BIZ UDGothic';
+        font-size: 36px;
+        font-weight: 500;
+        text-align: center;
+        height: 100%;
+        padding: 0.5rem;
+        text-align: center;
+        position: relative;
+        z-index: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .gridlayout-item:before {
+        content: " ";
+        position: absolute;
+        z-index: -1;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        opacity: 0.4;
+    }
+
+.gridlayout-header:before {
+    background-color: none;
+}
+.gridlayout-content {
+        color: white;
+        background-color: mediumblue;
+}
+.gridlayout-left-side-bar:before {
+    background-color: var(--bs-green);
+}
+.gridlayout-right-side-bar:before {
+    background-color: var(--bs-info);
+}
+.gridlayout-footer:before {
+    background-color: var(--bs-blue);
+    opacity: 0.5;
+}
+</style>

@@ -1,0 +1,311 @@
+﻿@page "/SuitList"
+@using DevExpress.Blazor
+@using System.Reflection
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+@using DBAccess.Model;
+@inject NavigationManager NavigationManager
+@inherits Base
+
+
+<div class="navbar">
+    <a href="/Top">トップページ</a>
+    <a>/ <b>案件一覧</b></a>
+</div>
+
+<br>
+<DxFormLayout CaptionPosition="CaptionPosition.Vertical" CssClass="w-100">
+    <DxFormLayoutItem ColSpanMd="2">
+        <DxButton Text="クリア" Click="OnClear" />
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanMd="2">
+        <DxCheckBox @bind-Checked="@OnFilterRow">ﾌｨﾙﾀｰ行</DxCheckBox>
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanMd="2">
+        <DxCheckBox @bind-Checked="@OnGroupRow">ｸﾞﾙｰﾌﾟ行</DxCheckBox>
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanMd="6">
+        <DxCheckBox CheckType="CheckType.Switch"
+                    LabelPosition="LabelPosition.Left"
+                    Checked="@CompFlg"
+                    CheckedChanged="@((bool t) => OnCheckedChanged(t))"
+                    Alignment="CheckBoxContentAlignment.Right">
+            処理完了表示
+        </DxCheckBox>
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+
+<DxGrid Data="@MSuitList"
+        @ref="Grid"
+        CssClass="myGrid"
+        AllowSort="true"
+        KeyFieldName="Id"
+        SelectionMode="GridSelectionMode.Single"
+        @bind-SelectedDataItem="@SelectedDataItem"
+        ColumnResizeMode="GridColumnResizeMode.ColumnsContainer"
+        VirtualScrollingEnabled="true"
+        EditMode="GridEditMode.PopupEditForm"
+        CustomizeEditModel="Grid_CustomizeEditModel"
+        EditModelSaving="Grid_EditModelSaving"
+        DataItemDeleting="Grid_DataItemDeleting"
+        ShowFilterRow="@OnFilterRow"
+        ShowGroupPanel="@OnGroupRow"
+        FocusedRowEnabled="true"
+        FocusedRowChanged="OnFocusedRowChanged"
+        TextWrapEnabled="false">
+    <Columns>
+        <DxGridCommandColumn Width="120px" Caption="アクション" NewButtonVisible="false">
+        </DxGridCommandColumn>
+        <DxGridDataColumn FieldName="SuitNo" Caption="案件番号" Width="100px" />
+        <DxGridDataColumn FieldName="SituationName" Caption="状況" Width="100px" />
+        <DxGridDataColumn FieldName="CustomerCd" Caption="顧客コード" Width="100px" />
+        <DxGridDataColumn FieldName="_MCustomer.CompanyName" Caption="会社名" Width="180px" />
+        <DxGridDataColumn FieldName="_MCustomer.PresidentNameSei" Caption="代表者・姓" Width="100px" />
+        <DxGridDataColumn FieldName="_MCustomer.PresidentNameMei" Caption="代表者・名" Width="100px" />
+        <DxGridDataColumn FieldName="_MCustomer.ZipCd" Caption="〒" Width="80px" />
+        <DxGridDataColumn FieldName="_MCustomer.AddressKen" Caption="都道府県" Width="80px" />
+        <DxGridDataColumn FieldName="_MCustomer.AddressSi" Caption="市区郡" Width="140px" />
+        <DxGridDataColumn FieldName="_MCustomer.AddressBanti" Caption="番地" Width="190px" />
+        <DxGridDataColumn FieldName="_MCustomer.Industry" Caption="業種" Width="90px" />
+        <DxGridDataColumn FieldName="_MCustomer.MonthlySales" Caption="月商" Width="110px" />
+        <DxGridDataColumn FieldName="_MCustomer.AcquisitionConsultationAmount" Caption="買収ご相談金額" Width="120px" />
+    </Columns>
+    <EditFormTemplate Context="EditFormContext">
+        <DxFormLayout>
+            <DxFormLayoutItem Caption="案件番号" ColSpanMd="6" BeginRow="true">
+                <DxTextBox @bind-Text="EntryData.SuitNo" ReadOnly=true />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="状況" ColSpanMd="6">
+                <DxComboBox Data="@CombSituationList"
+                            TextFieldName="@nameof(CommonCombBox.Text)"
+                            @bind-Value="EntryData.Situation" />
+                <ValidationMessage For="@(() => EntryData.Situation)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="顧客コード" ColSpanMd="6">
+                <DxComboBox Data="@CombCustomerList"
+                             ReadOnly="true"
+                            TextFieldName="@nameof(CommonCombBox.Text)"
+                            @bind-Value="EntryData.CustomerCd" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="会社名" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.CompanyName" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.CompanyName)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="会社名カナ" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.CompanyKana" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.CompanyKana)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="代表者・姓" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.PresidentNameSei" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.PresidentNameSei)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="代表者・名" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.PresidentNameMei" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.PresidentNameMei)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="代表者・姓カナ" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.PresidentKanaSei" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.PresidentKanaSei)" />
+            </DxFormLayoutItem>            <DxFormLayoutItem Caption="代表者・名カナ" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.PresidentKanaMei" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.PresidentKanaMei)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="〒" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.ZipCd" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.ZipCd)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="住所・都道府県" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.AddressKen" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.AddressKen)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="市区郡" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.AddressSi" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.AddressSi)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="番地" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.AddressBanti" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.AddressBanti)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="最寄り駅" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.NearestStation" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.NearestStation)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Tel" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.Tel" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.Tel)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Fax" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.Fax" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.Fax)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="メール" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.Email" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.Email)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="ホームページ" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.Url" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.Url)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="業種" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData._MCustomer.Industry" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.Industry)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="誕生日" ColSpanMd="6" BeginRow=true>
+                <DxDateEdit @bind-Date="EntryData._MCustomer.DateOfBirth" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.DateOfBirth)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="月商" ColSpanMd="6" BeginRow=true>
+                <DxSpinEdit ShowSpinButtons="false" @bind-Value="EntryData._MCustomer.MonthlySales" DisplayFormat="{0:#,##0}" CssClass="my-spin" />
+                <ValidationMessage For="@(() => EntryData._MCustomer.MonthlySales)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="万円" ColSpanMd="1">
+            </DxFormLayoutItem>
+        </DxFormLayout>
+    </EditFormTemplate>
+</DxGrid>
+
+<DxFormLayout CssClass="b-100">
+    <DxFormLayoutItem ColSpanLg="12" ColSpanMd="12">
+        <Template>
+            <DxButton Text="預かり書類" Click="OnButtonDocument" />
+            <DxButton Text="債権管理" Click="OnButtonSaiken" />
+            <DxButton Text="入出金表" Click="OnButtonDepositTable" />
+            <DxButton Text="先頭行" Click="OnButtonFastRow" />
+            <DxButton Text="最終行" Click="OnButtonLastRow" />
+        </Template>
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+<style>
+    .button_end {
+        position: absolute;
+        right: 0;
+    }
+    .myGrid {
+        height: 465px;
+    }
+    .b-100 {
+        padding: 10px;
+    }
+    .dxbl-modal {
+        --dxbl-popup-max-width: 1200px;
+    }
+    .w-1200 {
+        width: 1200px;
+    }
+    .filter-switch-row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+    .filter-checkboxes {
+        display: flex;
+        justify-content: flex-start;
+        width: 80%;
+    }
+    .filter-checkbox {
+        width: 150px;
+    }
+    .accordion {
+        width: 100%;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #d0d0d0;
+    }
+    .accordion summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1em;
+        cursor: pointer;
+        font-weight: bold;
+        color: #333;
+    }
+    .accordion summary::after {
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-right: 2px solid #333;
+        border-bottom: 2px solid #333;
+        transform: rotate(45deg);
+        transition: transform 0.3s;
+    }
+    .accordion[open] summary::after {
+        transform: rotate(225deg);
+    }
+    .accordion p {
+        padding: 1em;
+        margin: 0;
+        display: none;
+    }
+    .accordion[open] p {
+        display: block;
+    }
+    .select_title {
+        font-weight: bolder;
+    }
+    .navbar {
+        justify-content: left;
+        background-color: #f0f0f0; /* 背景色を淡い灰色にする */
+        padding: 10px; /* 上下左右に余白をつける */
+    }
+    .navbar a {
+        color: #000; /* テキスト色 */
+        padding: 0 5px; /* 各リンク間にスペースをつける */
+    }
+    .caption {
+        font-weight: 800;
+    }
+    .dx-demo-radio-group-label {
+        font-size: inherit;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .dx-demo-radio-group-label.dx-demo-small {
+        font-size: 0.75rem;
+    }
+    .dx-demo-radio-group-label.dx-demo-large {
+        font-size: 1rem;
+    }
+    .dx-demo-radio-group {
+        padding-bottom: 1rem;
+    }
+    .dx-demo-radio-selected-value {
+        max-width: 480px;
+        width: 100%;
+    }
+    .panel {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: #f9f9f9;
+    }
+    .wrapper {
+        margin: 20px;
+    }
+    .upload-container,
+    .upload-container > div:first-child {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+    .drop-file-icon {
+        background-size: contain;
+        mask-repeat: no-repeat;
+        -webkit-mask-repeat: no-repeat;
+        background-position: center center;
+        background-color: #ADB5BD;
+        width: 48px;
+        height: 48px;
+        -webkit-mask-image: url("../images/icons/drop-file.svg");
+        mask-image: url("../images/icons/drop-file.svg");
+    }
+    .drop-file-label {
+        font-weight: 510;
+        font-size: 1rem;
+    }
+    .cancelBt{
+        margin-left: 30px;
+    }
+</style>

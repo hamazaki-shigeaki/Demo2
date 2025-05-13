@@ -1,0 +1,98 @@
+﻿@page "/OcrImport"
+
+@using DevExpress.Blazor
+@using DBAccess.Model
+@using Microsoft.AspNetCore.Components.Forms
+
+@inject NavigationManager NavigationManager
+
+@inherits Base
+
+<div class="navbar">
+    <a href="/Top">トップページ</a>
+    <a>/ <b>OCR取込</b></a>
+</div>
+
+<DxGrid Data="@FilePathModelList"
+        @ref="Grid"
+        CssClass="myGrid"
+        ColumnResizeMode="GridColumnResizeMode.ColumnsContainer"
+        VirtualScrollingEnabled="true"
+        FocusedRowEnabled="true"
+        AllowSelectRowByClick="true"
+        @bind-SelectedDataItems="@SelectedDataItems"
+        TextWrapEnabled="false">
+    <Columns>
+        <DxGridSelectionColumn Width="104px" />
+        <DxGridDataColumn FieldName="FileName" Caption="ファイル名" Width="500px" />
+    </Columns>
+</DxGrid>
+
+<DxButton Text="ファイル取込" Click="OnButtonTorikomi" />
+<DxButton Text="バッチ実行" Click="OnButtonBatch" />
+<DxButton Text="削除" Click="OnButtonDelete" />
+<DxButton Text="戻る" Click="OnButtonReturn" />
+
+<DxPopup Width="800px"
+         Height="400px"
+         CssClass="PopupCss"
+         @bind-Visible="@PopupVisible"
+         HeaderText="書類取込">
+    <BodyContentTemplate>
+        <DxButton Text="閉じる" Click="OnButtonClose" style="margin-top:5px" />
+        <div id="overviewDemoDropZone" class="custom-drop-zone">
+            <span class="drop-file-label">Drag and Drop File Here</span>
+            <DxButton Id="overviewDemoSelectButton"
+                      CssClass="m-1"
+                      RenderStyle="ButtonRenderStyle.Primary"
+                      Text="Select File" />
+        </div>
+        <DxUpload Name="myFile"
+                  Visible="@UploadVisible"
+                  AllowMultiFileUpload="true"
+                  ExternalSelectButtonCssSelector="#overviewDemoSelectButton"
+                  ExternalDropZoneCssSelector="#overviewDemoDropZone"
+                  ExternalDropZoneDragOverCssClass="custom-drop-zone-hover"
+                  MaxFileSize="15000000"
+                  UploadUrl="@GetUploadUrl("api/Upload/Upload/")"
+                  FileUploadStart="@OnFileUploadStart"
+                  SelectedFilesChanged="@SelectedFilesChanged">
+        </DxUpload>
+    </BodyContentTemplate>
+</DxPopup>
+
+<style>
+    .navbar {
+        background-color: #f0f0f0;
+        padding: 10px;
+    }
+
+        .navbar a {
+            color: #000;
+            padding: 0 5px;
+        }
+
+    .myGrid {
+        height: 465px;
+    }
+
+    .custom-drop-zone {
+        padding: 0;
+        border: 2px dashed #b7b7b7;
+        height: 230px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(183, 183, 183, 0.1);
+    }
+
+    .custom-drop-zone-hover {
+        border-style: solid;
+    }
+
+    .drop-file-label {
+        font-weight: 510;
+        font-size: 1rem;
+    }
+</style>

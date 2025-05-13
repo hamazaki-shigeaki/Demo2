@@ -1,0 +1,229 @@
+﻿@page "/Ocr"
+@using DevExpress.Blazor
+@using DevExpress.Blazor.RichEdit
+@using DBAccess.Model
+@using DBAccess.Common
+@inject IWebHostEnvironment Env
+
+@inherits Base
+
+<div class="navbar">
+    <a href="/Top">トップページ</a>
+    <a>/ <b>OCR取込</b></a>
+</div>
+
+<br>
+<h3>OCR取込み画像アップロード</h3>
+
+<InputFile OnChange="HandleSelected" accept="image/jpeg" />
+@if (!string.IsNullOrEmpty(ImagePath))
+{
+    <div style="display: flex; margin-top: 20px;">
+        <img src="@ImagePath" alt="Uploaded image" style="max-width: 800px; max-height: 900px;" />
+        <DxGrid Data="@TOcrList"
+                @ref="Grid"
+                CssClass="myGrid"
+                AllowSort="true"
+                KeyFieldName="Id"
+                ColumnResizeMode="GridColumnResizeMode.ColumnsContainer"
+                VirtualScrollingEnabled="true"
+                @bind-SelectedDataItem="@SelectedDataItem"
+                SelectionMode="GridSelectionMode.Single"
+                FocusedRowEnabled="true"
+                FocusedRowChanged="OnFocusedRowChanged"
+                EditMode="GridEditMode.EditCell"
+                EditModelSaving="Grid_EditModelSaving"
+                DataItemDeleting="Grid_DataItemDeleting"
+                CustomizeEditModel="Grid_CustomizeEditModel"
+                TextWrapEnabled="false">
+            <Columns>
+                <DxGridDataColumn FieldName="Yyyy" Caption="年" Width="60px" />
+                <DxGridDataColumn FieldName="Mm" Caption="月" Width="60px" />
+                <DxGridDataColumn FieldName="Dd" Caption="日" Width="60px" />
+                <DxGridDataColumn FieldName="Apply" Caption="適用" Width="180px" />
+                <DxGridDataColumn FieldName="Apply2" Caption="適用2" Width="250px" />
+                <DxGridDataColumn FieldName="SiharaiKin" Caption="お支払金額" Width="130px" />
+                <DxGridDataColumn FieldName="AzukariKin" Caption="お預り金額" Width="130px" />
+                <DxGridDataColumn FieldName="Zandaka" Caption="残高" Width="150px" />
+            </Columns>
+            <TotalSummary>
+                <DxGridSummaryItem SummaryType="GridSummaryItemType.Sum" FieldName="SiharaiKin" />
+                <DxGridSummaryItem SummaryType="GridSummaryItemType.Sum" FieldName="AzukariKin" />
+            </TotalSummary>
+        </DxGrid>
+    </div>
+}
+<DxFormLayout CssClass="b-100">
+    <DxFormLayoutItem ColSpanLg="11" ColSpanMd="11">
+        @if (!string.IsNullOrEmpty(ImagePath)){
+            <DxButton Text="取込" Click="EditModelSaving" style="margin-top:5px" />
+        }
+        <DxButton Text="戻る" Click="OnButtonReturn" style="margin-top:5px" />
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+
+<style>
+
+    .button_end {
+        position: absolute;
+        right: 0;
+    }
+
+    .myGrid {
+        height: auto;
+    }
+
+    .b-100 {
+        padding: 10px;
+    }
+
+    .dxbl-modal {
+        --dxbl-popup-max-width: 1200px;
+    }
+
+    .w-1200 {
+        width: 1200px;
+    }
+
+
+    .filter-switch-row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .filter-checkboxes {
+        display: flex;
+        justify-content: flex-start;
+        width: 80%;
+    }
+
+    .filter-checkbox {
+        width: 150px;
+    }
+
+    .accordion {
+        width: 100%;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #d0d0d0;
+    }
+
+        .accordion summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            color: #333;
+        }
+
+            .accordion summary::after {
+                content: '';
+                width: 10px;
+                height: 10px;
+                border-right: 2px solid #333;
+                border-bottom: 2px solid #333;
+                transform: rotate(45deg);
+                transition: transform 0.3s;
+            }
+
+        .accordion[open] summary::after {
+            transform: rotate(225deg);
+        }
+
+        .accordion p {
+            padding: 1em;
+            margin: 0;
+            display: none;
+        }
+
+        .accordion[open] p {
+            display: block;
+        }
+
+    .select_title {
+        font-weight: bolder;
+    }
+
+    .navbar {
+        justify-content: left;
+        background-color: #f0f0f0; /* 背景色を淡い灰色にする */
+        padding: 10px; /* 上下左右に余白をつける */
+    }
+
+        .navbar a {
+            color: #000; /* テキスト色 */
+            padding: 0 5px; /* 各リンク間にスペースをつける */
+        }
+
+    .caption {
+        font-weight: 800;
+    }
+
+    .dx-demo-radio-group-label {
+        font-size: inherit;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+        .dx-demo-radio-group-label.dx-demo-small {
+            font-size: 0.75rem;
+        }
+
+        .dx-demo-radio-group-label.dx-demo-large {
+            font-size: 1rem;
+        }
+
+    .dx-demo-radio-group {
+        padding-bottom: 1rem;
+    }
+
+    .dx-demo-radio-selected-value {
+        max-width: 480px;
+        width: 100%;
+    }
+
+    .panel {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: #f9f9f9;
+    }
+
+
+    .wrapper {
+        margin: 20px;
+    }
+
+    .upload-container,
+    .upload-container > div:first-child {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .drop-file-icon {
+        background-size: contain;
+        mask-repeat: no-repeat;
+        -webkit-mask-repeat: no-repeat;
+        background-position: center center;
+        background-color: #ADB5BD;
+        width: 48px;
+        height: 48px;
+        -webkit-mask-image: url("../images/icons/drop-file.svg");
+        mask-image: url("../images/icons/drop-file.svg");
+    }
+
+    .drop-file-label {
+        font-weight: 510;
+        font-size: 1rem;
+    }
+
+    .cancelBt {
+        margin-left: 30px;
+    }
+</style>

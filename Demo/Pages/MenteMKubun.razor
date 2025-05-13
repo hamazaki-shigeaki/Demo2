@@ -1,0 +1,143 @@
+﻿@page "/MenteMKubun"
+@using DevExpress.Blazor
+@using DBAccess.Model
+@inherits Base
+
+<div class="navbar">
+    <a href="/SuitEntry">トップページ</a>
+    <a>/ メンテ</a>
+    <a>/ 区分マスタ</a>
+</div>
+
+
+<br>
+<DxFormLayout CssClass="w-100">
+    <DxFormLayoutItem Caption="区分" ColSpanLg="3" ColSpanMd="3" CssClass="caption">
+    <Template>
+        <DxComboBox Data="@cmbKubun"
+                    FilteringMode="DataGridFilteringMode.Contains"
+                    ValueFieldName="@nameof(CommonCombBox.Value)"
+                    TextFieldName="@nameof(CommonCombBox.Text)"
+                    @bind-Value="KubunId" />
+    </Template>
+    </DxFormLayoutItem>
+    <DxFormLayoutItem Caption="" ColSpanLg="9" ColSpanMd="9" >
+    <Template>
+        <DxButton Text="検　索" RenderStyle="ButtonRenderStyle.Primary" style="margin-left:15px" Click="OnSelect"/>
+            <DxButton Text="クリア" Click="OnClear" />
+    </Template>
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+
+<br>
+<a>区分マスタ一覧</a>
+<br>
+
+<DxFormLayout CaptionPosition="CaptionPosition.Vertical" CssClass="w-100">
+    <DxFormLayoutItem ColSpanMd="2">
+        <DxCheckBox @bind-Checked="@OnFilterRow">ﾌｨﾙﾀｰ行</DxCheckBox>
+    </DxFormLayoutItem>
+    <DxFormLayoutItem ColSpanMd="2">
+        <DxCheckBox @bind-Checked="@OnGroupRow">ｸﾞﾙｰﾌﾟ行</DxCheckBox>
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+
+<DxGrid Data="@MKubunList"
+        @ref="Grid"
+        CssClass="myGrid"
+        AllowSort="true"
+        KeyFieldName="Id"
+        ColumnResizeMode="GridColumnResizeMode.ColumnsContainer"
+        VirtualScrollingEnabled="true"
+        @bind-SelectedDataItem="@SelectedDataItem"
+        CustomizeEditModel="Grid_CustomizeEditModel"
+        EditModelSaving="Grid_EditModelSaving"
+        DataItemDeleting="Grid_DataItemDeleting"
+        EditMode="GridEditMode.PopupEditForm"
+        SelectionMode="GridSelectionMode.Single"
+        FocusedRowEnabled="true"
+        ShowFilterRow="@OnFilterRow"
+        ShowGroupPanel="@OnGroupRow"
+        TextWrapEnabled="false">
+    <Columns>
+        <DxGridCommandColumn Width="120px" Caption="アクション">
+        </DxGridCommandColumn>
+        <DxGridDataColumn FieldName="DspKubun" Caption="区分" Width="110px" />
+        <DxGridDataColumn FieldName="Code" Caption="コード" Width="110px" />
+        <DxGridDataColumn FieldName="Name" Caption="名称" Width="200px" />
+        <DxGridDataColumn FieldName="DisplayOder" Caption="表示順" Width="90px" />
+    </Columns>
+    <EditFormTemplate Context="EditFormContext">
+        <DxFormLayout>
+            <DxFormLayoutItem Caption="区分" ColSpanMd="6">
+                <DxComboBox Data="@cmbKubun"
+                            FilteringMode="DataGridFilteringMode.Contains"
+                            TextFieldName="@nameof(CommonCombBox.Text)"
+                            ReadOnly="@ReadOnlyKubunId"
+                            @bind-Value="EntryData.StrKubunId" />
+                <ValidationMessage For="@(() => EntryData.StrKubunId)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="コード" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.Code" maxlength="80" Enabled="@EnabledCode" />
+                <ValidationMessage For="@(() => EntryData.Code)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="名称" ColSpanMd="6" BeginRow=true>
+                <DxTextBox @bind-Text="EntryData.Name" maxlength="80" />
+                <ValidationMessage For="@(() => EntryData.Name)" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="表示順" ColSpanMd="6" BeginRow="true">
+                <DxSpinEdit @bind-Value="EntryData.DisplayOder" ShowSpinButtons="false" />
+                <ValidationMessage For="@(() => EntryData.DisplayOder)" />
+            </DxFormLayoutItem>
+        </DxFormLayout>
+    </EditFormTemplate>
+</DxGrid>
+
+<DxFormLayout CssClass="b-100">
+    <DxFormLayoutItem ColSpanLg="11" ColSpanMd="11" >
+        <DxButton Text="戻る" Click="OnButtonReturn" style="margin-top:5px" />
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+
+<style>
+    .filter-checkboxes {
+        display: flex;
+        justify-content: flex-start;
+        width: 80%;
+    }
+
+    .filter-checkbox {
+        width: 150px;
+    }
+
+    .navbar {
+        justify-content: left;
+        background-color: #f0f0f0; /* 背景色を淡い灰色にする */
+        padding: 10px; /* 上下左右に余白をつける */
+    }
+
+        .navbar a {
+            color: #000; /* テキスト色 */
+            padding: 0 5px; /* 各リンク間にスペースをつける */
+        }
+
+    .caption {
+        font-weight: 800;
+    }
+
+    .myGrid {
+        height: 464px;
+        width: 85%;
+    }
+    .dxbl-modal {
+        --dxbl-popup-max-width: 1200px;
+    }
+
+    .w-1200 {
+        width: 1200px;
+    }
+
+</style>
