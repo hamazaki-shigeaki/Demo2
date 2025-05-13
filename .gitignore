@@ -84,3 +84,10 @@
 /Utilities/Utilities/obj/Utilities.csproj.nuget.dgspec.json
 /Utilities/Utilities/obj/Utilities.csproj.nuget.g.props
 /Utilities/Utilities/obj/Utilities.csproj.nuget.g.targets
+/.vs/ProjectEvaluation
+/DBAccess/bin/Debug/net9.0
+/Dbflute
+/Dbflute/bin/Debug/net9.0
+/Dbflute/bin/Debug/net9.0/Dbflute.deps.json
+/Dbflute/bin/Debug/net9.0/Dbflute.dll
+/Dbflute/bin/Debug/net9.0/Dbflute.pdb
