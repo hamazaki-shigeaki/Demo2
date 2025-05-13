@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DevExpressReports.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <COMReference Include="Microsoft.Office.Access.dll">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>9</VersionMajor>
+      <Guid>4affc9a0-5f99-101b-af4e-00aa003f0f07</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+    </COMReference>
+    <COMReference Include="Microsoft.Vbe.Forms.dll">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>2</VersionMajor>
+      <Guid>0d452ee1-e08f-101a-852e-02608c4d0bb4</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+    </COMReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.7.3" />
+    <PackageReference Include="GrapeCity.DioDocs.Excel.ja" Version="6.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DBAccess\DBAccess.csproj" />
+    <ProjectReference Include="..\Dbflute\Dbflute.csproj" />
+    <ProjectReference Include="..\LogWriter\LogWriter.csproj" />
+    <ProjectReference Include="..\Utilities\Utilities\Utilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Template\**" />
+    <EmbeddedResource Remove="Template\**" />
+    <None Remove="Template\**" />
+  </ItemGroup>
+
+</Project>
